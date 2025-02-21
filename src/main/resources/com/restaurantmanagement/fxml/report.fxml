@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.XYChart?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.restaurantmanagement.app.controller.RevenueReportController">
+    <children>
+        <VBox spacing="10" alignment="CENTER" layoutX="20" layoutY="20">
+            <Label text="Báo Cáo Doanh Thu" style="-fx-font-size: 24px;"/>
+
+            <!-- Scrollable TableView to show detailed revenue reports -->
+            <ScrollPane fitToWidth="true" fitToHeight="true" prefHeight="300.0" prefWidth="600.0">
+                <content>
+                    <TableView fx:id="revenueTable" prefWidth="600.0" prefHeight="300.0">
+                        <columns>
+                            <TableColumn fx:id="reportMonthColumn" text="Tháng" prefWidth="200.0" />
+                            <TableColumn fx:id="totalRevenueColumn" text="Doanh Thu" prefWidth="200.0" />
+                            <TableColumn fx:id="totalQuantityColumn" text="Số Lượng Món Bán" prefWidth="200.0" />
+                        </columns>
+                    </TableView>
+                </content>
+            </ScrollPane>
+
+            <!-- Bar Chart to show visual representation of revenue and quantity -->
+            <BarChart fx:id="revenueChart" prefWidth="600" prefHeight="400">
+                <xAxis>
+                    <CategoryAxis fx:id="monthAxis"/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis fx:id="valueAxis" label="Giá trị"/>
+                </yAxis>
+            </BarChart>
+
+            <Button text="Thoát" onAction="#handleExit" style="-fx-font-size: 14px; -fx-padding: 10 20 10 20;"/>
+        </VBox>
+    </children>
+</AnchorPane>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.restaurantmanagement.app.controller.ViewOrdersController">
+    <children>
+        <TableView fx:id="ordersTableView" layoutX="50" layoutY="50" prefWidth="600" prefHeight="400">
+            <columns>
+                <TableColumn fx:id="orderIdColumn" text="Order ID" prefWidth="150"/>
+                <TableColumn fx:id="totalAmountColumn" text="Total Amount" prefWidth="150"/>
+                <TableColumn fx:id="orderDateColumn" text="Order Date" prefWidth="150"/>
+                <TableColumn fx:id="statusColumn" text="Status" prefWidth="150"/>
+            </columns>
+        </TableView>
+
+        <TextField fx:id="orderIdField" layoutX="50" layoutY="460" promptText="Enter Order ID"/>
+        <ComboBox fx:id="statusComboBox" layoutX="250" layoutY="460" promptText="Select Status">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Pending"/>
+                    <String fx:value="Completed"/>
+                    <String fx:value="Cancelled"/>
+                </FXCollections>
+            </items>
+        </ComboBox>
+
+        <Button layoutX="450" layoutY="460" text="Update Status" onAction="#handleUpdateStatus"/>
+        <Button layoutX="550" layoutY="460" text="Refresh" onAction="#handleRefresh"/>
+    </children>
+</AnchorPane>

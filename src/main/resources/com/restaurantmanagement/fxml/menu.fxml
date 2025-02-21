@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.restaurantmanagement.app.controller.CashierMenuController">
+    <children>
+        <TextField fx:id="searchField" layoutX="20" layoutY="20" promptText="Tìm món ăn" onKeyReleased="#handleSearch" />
+
+        <TableView fx:id="menuItemsTable" layoutX="20" layoutY="60" prefHeight="400" prefWidth="550">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="50" />
+                <TableColumn fx:id="colName" text="Tên Món" prefWidth="150" />
+                <TableColumn fx:id="colCategory" text="Danh Mục" prefWidth="100" />
+                <TableColumn fx:id="colDescription" text="Mô Tả" prefWidth="200" />
+                <TableColumn fx:id="colPrice" text="Giá" prefWidth="100" />
+            </columns>
+        </TableView>
+    </children>
+</AnchorPane>

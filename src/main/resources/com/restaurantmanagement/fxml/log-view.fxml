@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.restaurantmanagement.app.controller.LogController">
+    <!-- Khu vực trên cùng: Tiêu đề -->
+    <top>
+        <Label text="Stock Management" />
+        <HBox spacing="10">
+            <Label text="Search by Name:" />
+            <TextField fx:id="nameSearchField" />
+            <Label text="Search by Date:" />
+            <DatePicker fx:id="dateSearchField" />
+            <Button text="Search" onAction="#handleSearch" />
+        </HBox>
+    </top>
+    <center>
+        <TableView fx:id="dailyStockTable" prefHeight="200" prefWidth="600">
+            <columns>
+                <TableColumn fx:id="stockIDColumn" text="ID" />
+                <TableColumn fx:id="ingredientIDColumn" text="Ingredient ID" />
+                <TableColumn fx:id="nameColumn" text="Name" />
+                <TableColumn fx:id="categoryIDColumn" text="Category ID" />
+                <TableColumn fx:id="unitColumn" text="Unit" />
+                <TableColumn fx:id="stockColumn" text="Stock" />
+                <TableColumn fx:id="minStockColumn" text="Min Stock" />
+                <TableColumn fx:id="priceColumn" text="Price per Unit" />
+                <TableColumn fx:id="dateColumn" text="Date" />
+            </columns>
+        </TableView>
+    </center>
+</BorderPane>

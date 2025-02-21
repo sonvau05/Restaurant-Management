@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="10" alignment="CENTER" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.restaurantmanagement.app.controller.AddOrderController">
+    <Label text="Add Order" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+    <HBox spacing="10">
+        <TextField fx:id="itemIdField" promptText="Item ID"/>
+        <TextField fx:id="quantityField" promptText="Quantity"/>
+        <TextField fx:id="priceField" promptText="Price"/>
+        <Button text="➕ Add" onAction="#handleAddItem"/>
+    </HBox>
+
+    <TableView fx:id="orderTable">
+        <columns>
+            <TableColumn text="Item ID" fx:id="itemIdColumn"/>
+            <TableColumn text="Quantity" fx:id="quantityColumn"/>
+            <TableColumn text="Price" fx:id="priceColumn"/>
+        </columns>
+    </TableView>
+
+    <HBox spacing="10">
+        <Button text="🗑 Delete" onAction="#handleDeleteItem"/>
+    </HBox>
+
+    <Label text="Total Amount: " style="-fx-font-size: 14px;"/>
+    <Label fx:id="totalAmountLabel" text="0.00" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+
+    <Button text="💾 Save Order" onAction="#handleSaveOrder"/>
+</VBox>

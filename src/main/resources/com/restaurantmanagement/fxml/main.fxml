@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<TabPane xmlns="http://javafx.com/javafx/8"
+         xmlns:fx="http://javafx.com/fxml/1"
+         fx:controller="com.restaurantmanagement.app.controller.MainController">
+
+    <Tab text="Kho hàng">
+        <VBox>
+            <fx:include source="warehouse-view.fxml"/>
+        </VBox>
+    </Tab>
+
+    <Tab text="Đơn hàng">
+        <VBox>
+            <fx:include source="inventory-view.fxml"/>
+        </VBox>
+    </Tab>
+
+    <Tab text="So sánh">
+        <VBox>
+            <fx:include source="log-view.fxml"/>
+        </VBox>
+    </Tab>
+
+</TabPane>
