@@ -5,13 +5,10 @@ import com.restaurantmanagement.database.DatabaseConnection;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -22,7 +19,6 @@ import java.util.Optional;
 
 public class IngredientController {
     @FXML private ComboBox<String> categoryFilter;
-
     @FXML private TextField searchField;
     @FXML private TableView<Ingredient> ingredientTable;
     @FXML private TableColumn<Ingredient, Integer> idColumn;
@@ -55,7 +51,6 @@ public class IngredientController {
 
     @FXML
     public void initialize() {
-        // Thiết lập giá trị cho các cột
         idColumn.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
         nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
         unitColumn.setCellValueFactory(cellData -> cellData.getValue().unitProperty());
@@ -65,31 +60,27 @@ public class IngredientController {
 
         searchField.setOnKeyReleased(event -> handleSearch());
         addButtonToTable();
+        loadCategories();
 
-        loadCategories();  // <--- Thêm dòng này để tải danh mục
-
-        // Đăng ký sự kiện khi chọn danh mục trong ComboBox
         categoryFilter.setOnAction(event -> handleFilterByCategory());
-
-        // Tải dữ liệu từ database
         loadAllIngredients();
     }
 
     private void addButtonToTable() {
         actionColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button editButton = new Button("Sửa");
-            private final Button deleteButton = new Button("Xóa");
+            private final Button editButton = new Button("Edit");
+            private final Button deleteButton = new Button("Delete");
             private final HBox buttonsBox = new HBox(10, editButton, deleteButton);
 
             {
                 editButton.setOnAction(event -> {
                     Ingredient ingredient = getTableView().getItems().get(getIndex());
-                    handleEditIngredient(ingredient); // Đã sửa lỗi
+                    handleEditIngredient(ingredient);
                 });
 
                 deleteButton.setOnAction(event -> {
                     Ingredient ingredient = getTableView().getItems().get(getIndex());
-                    handleDeleteIngredient(ingredient);  // Gọi phương thức đã sửa
+                    handleDeleteIngredient(ingredient);
                 });
             }
 
@@ -104,7 +95,6 @@ public class IngredientController {
             }
         });
     }
-
 
     private void loadAllIngredients() {
         ingredientList.clear();
@@ -133,8 +123,6 @@ public class IngredientController {
         }
     }
 
-
-    // Thêm nguyên liệu
     @FXML
     private void handleAddIngredient() {
         IngredientForm dialog = new IngredientForm(null);
@@ -142,11 +130,10 @@ public class IngredientController {
         result.ifPresent(ingredient -> ingredientList.add(ingredient));
     }
 
-
     @FXML
     private void handleEditIngredient(Ingredient ingredient) {
         if (ingredient == null) {
-            showAlert("Chọn một nguyên liệu để sửa.");
+            showAlert("Select an ingredient to edit.");
             return;
         }
 
@@ -155,15 +142,14 @@ public class IngredientController {
 
         result.ifPresent(updated -> {
             int index = ingredientList.indexOf(ingredient);
-            ingredientList.set(index, updated); // Cập nhật nguyên liệu trong danh sách
+            ingredientList.set(index, updated);
 
-            loadAllIngredients(); // Load lại toàn bộ danh sách để làm mới bảng
+            loadAllIngredients();
 
             if (ingredientTable != null) {
-                ingredientTable.refresh(); // Refresh thủ công bảng nếu ingredientTable tồn tại
+                ingredientTable.refresh();
             }
 
-            // Cập nhật database
             String sql = "UPDATE Ingredients SET Name = ?, Unit = ?, Stock = ?, MinStock = ?, PricePerUnit = ?, CategoryID = " +
                     "(SELECT CategoryID FROM IngredientCategories WHERE Name = ?) WHERE IngredientID = ?";
             try (Connection conn = DatabaseConnection.getConnection();
@@ -182,22 +168,18 @@ public class IngredientController {
         });
     }
 
-
-
-    // Xóa nguyên liệu
     @FXML
     private void handleDeleteIngredient(Ingredient selected) {
         if (selected == null) {
-            showAlert("Chọn một nguyên liệu để xóa.");
+            showAlert("Select an ingredient to delete.");
             return;
         }
 
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Bạn có chắc muốn xóa?", ButtonType.YES, ButtonType.NO);
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete?", ButtonType.YES, ButtonType.NO);
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.YES) {
             ingredientList.remove(selected);
 
-            // Xóa khỏi database
             String sql = "DELETE FROM Ingredients WHERE IngredientID = ?";
             try (Connection conn = DatabaseConnection.getConnection();
                  PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -209,17 +191,16 @@ public class IngredientController {
         }
     }
 
-    // Thêm danh mục nguyên liệu
     @FXML
     private void handleAddCategory() {
         TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Thêm danh mục");
-        dialog.setHeaderText("Nhập tên danh mục mới:");
+        dialog.setTitle("Add Category");
+        dialog.setHeaderText("Enter new category name:");
 
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(categoryName -> {
             if (categoryName.trim().isEmpty()) {
-                showAlert("Tên danh mục không được để trống!");
+                showAlert("Category name cannot be empty!");
                 return;
             }
 
@@ -231,26 +212,25 @@ public class IngredientController {
                 int affectedRows = stmt.executeUpdate();
 
                 if (affectedRows > 0) {
-                    showAlert("Đã thêm danh mục: " + categoryName);
-                    loadCategories();  // Cập nhật danh sách sau khi thêm
+                    showAlert("Added category: " + categoryName);
+                    loadCategories();
                 } else {
-                    showAlert("Thêm danh mục thất bại!");
+                    showAlert("Failed to add category!");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                showAlert("Lỗi khi thêm danh mục: " + e.getMessage());
+                showAlert("Error adding category: " + e.getMessage());
             }
         });
     }
-
 
     @FXML
     private void handleFilterByCategory() {
         String selectedCategory = categoryFilter.getValue();
 
         ObservableList<Ingredient> filteredList = FXCollections.observableArrayList();
-        if (selectedCategory == null || selectedCategory.equals("Tất cả")) {
-            filteredList = ingredientList;  // Hiển thị lại toàn bộ danh sách
+        if (selectedCategory == null || selectedCategory.equals("All")) {
+            filteredList = ingredientList;
         } else {
             for (Ingredient ingredient : ingredientList) {
                 if (selectedCategory.equals(ingredient.getCategory())) {
@@ -260,15 +240,11 @@ public class IngredientController {
         }
 
         ingredientTable.setItems(filteredList);
-
-        // Gọi lại phương thức thêm nút vào bảng sau khi thay đổi danh sách
         addButtonToTable();
     }
 
-
-
     private void loadCategories() {
-        ObservableList<String> categories = FXCollections.observableArrayList("Tất cả");
+        ObservableList<String> categories = FXCollections.observableArrayList("All");
         String sql = "SELECT Name FROM IngredientCategories";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -288,7 +264,7 @@ public class IngredientController {
 
     @FXML
     private void handleSaveDailyStock() {
-        String sql = "INSERT INTO DailyStock (IngredientID, Name,  Unit, Stock, MinStock, PricePerUnit, Date) " +
+        String sql = "INSERT INTO DailyStock (IngredientID, Name, Unit, Stock, MinStock, PricePerUnit, Date) " +
                 "VALUES (?, ?, ?, ?, ?, ?, CURRENT_DATE)";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -303,28 +279,25 @@ public class IngredientController {
                 stmt.setDouble(6, ingredient.getPricePerUnit());
 
                 stmt.addBatch();
-
             }
 
             int[] affectedRows = stmt.executeBatch();
 
             if (affectedRows.length > 0) {
-                showAlert("Đã lưu tồn kho thành công!");
+                showAlert("Daily stock saved successfully!");
             } else {
-                showAlert("Không có dữ liệu nào được lưu.");
+                showAlert("No data was saved.");
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert("Lỗi khi lưu tồn kho: " + e.getMessage());
+            showAlert("Error saving daily stock: " + e.getMessage());
         }
     }
 
-    // Hiển thị thông báo
     private void showAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setContentText(message);
         alert.show();
     }
-
 }

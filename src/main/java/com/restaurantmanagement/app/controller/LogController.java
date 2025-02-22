@@ -30,24 +30,31 @@ public class LogController {
 
     @FXML
     public void initialize() {
-        // Thiết lập giá trị cho các cột
-        stockIDColumn.setCellValueFactory(cellData -> cellData.getValue().stockIDProperty().asObject());
-        ingredientIDColumn.setCellValueFactory(cellData -> cellData.getValue().ingredientIDProperty().asObject());
-        nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
-        categoryIDColumn.setCellValueFactory(cellData -> cellData.getValue().categoryIDProperty().asObject());
-        unitColumn.setCellValueFactory(cellData -> cellData.getValue().unitProperty());
-        stockColumn.setCellValueFactory(cellData -> cellData.getValue().stockProperty().asObject());
-        minStockColumn.setCellValueFactory(cellData -> cellData.getValue().minStockProperty().asObject());
-        priceColumn.setCellValueFactory(cellData -> cellData.getValue().pricePerUnitProperty().asObject());
-        dateColumn.setCellValueFactory(cellData -> cellData.getValue().dateProperty());
+        stockIDColumn.setCellValueFactory(cellData
+                -> cellData.getValue().stockIDProperty().asObject());
+        ingredientIDColumn.setCellValueFactory(cellData
+                -> cellData.getValue().ingredientIDProperty().asObject());
+        nameColumn.setCellValueFactory(cellData
+                -> cellData.getValue().nameProperty());
+        categoryIDColumn.setCellValueFactory(cellData
+                -> cellData.getValue().categoryIDProperty().asObject());
+        unitColumn.setCellValueFactory(cellData
+                -> cellData.getValue().unitProperty());
+        stockColumn.setCellValueFactory(cellData
+                -> cellData.getValue().stockProperty().asObject());
+        minStockColumn.setCellValueFactory(cellData
+                -> cellData.getValue().minStockProperty().asObject());
+        priceColumn.setCellValueFactory(cellData
+                -> cellData.getValue().pricePerUnitProperty().asObject());
+        dateColumn.setCellValueFactory(cellData
+                -> cellData.getValue().dateProperty());
 
-        // Tải dữ liệu từ database
         loadDailyStockData();
     }
 
     private void loadDailyStockData() {
         dailyStockList.clear();
-        String sql = "SELECT * FROM DailyStock"; // Cập nhật SQL cho bảng DailyStock
+        String sql = "SELECT * FROM DailyStock";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -78,7 +85,6 @@ public class LogController {
         String nameFilter = nameSearchField.getText().toLowerCase();
         String dateFilter = dateSearchField.getValue() != null ? dateSearchField.getValue().toString() : "";
 
-        // Dọn dẹp danh sách cũ và tìm kiếm lại
         ObservableList<DailyStock> filteredList = FXCollections.observableArrayList();
 
         for (DailyStock stock : dailyStockList) {

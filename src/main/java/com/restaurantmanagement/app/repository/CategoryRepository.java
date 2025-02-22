@@ -67,7 +67,7 @@ public class CategoryRepository {
 
     public void insertDefaultCategories() {
         String query = "INSERT IGNORE INTO Categories (CategoryID, Name) VALUES " +
-                "(1, 'Món chay'), (2, 'Món nướng'), (3, 'Lẩu'), (4, 'Thức uống pha chế'), (5, 'Thức uống đóng lon')";
+                "(1, 'Vegetarian'), (2, 'Grilled'), (3, 'Hot Pot'), (4, 'Mixed Drinks'), (5, 'Canned Drinks')";
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
              Statement statement = connection.createStatement()) {
             statement.executeUpdate(query);

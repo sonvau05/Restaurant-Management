@@ -7,34 +7,32 @@
 
     <top>
         <HBox spacing="10" alignment="CENTER" style="-fx-background-color: #3F51B5; -fx-padding: 10;">
-            <Label text="Quản Lý Nguyên Liệu" style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"/>
+            <Label text="Ingredient Management" style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"/>
         </HBox>
     </top>
 
     <center>
         <VBox spacing="10" style="-fx-padding: 15;">
             <HBox spacing="10">
-                <Label text="Danh mục:" />
+                <Label text="Category:" />
                 <ComboBox fx:id="categoryFilter" onAction="#handleFilterByCategory" />
-                <TextField fx:id="searchField" promptText="Tìm kiếm nguyên liệu..." />
-                <Button text="Tìm kiếm" onAction="#handleSearch"/>
+                <TextField fx:id="searchField" promptText="Search ingredient..." />
+                <Button text="Search" onAction="#handleSearch"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Button text="Lưu Tồn Kho" onAction="#handleSaveDailyStock"/>
-                <Button text="Thêm nguyên liệu" onAction="#handleAddIngredient" style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
-                <Button text="Thêm danh mục" onAction="#handleAddCategory" style="-fx-background-color: #2196F3; -fx-text-fill: white;"/>
+                <Button text="Save Stock" onAction="#handleSaveDailyStock"/>
+                <Button text="Add Ingredient" onAction="#handleAddIngredient" style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+                <Button text="Add Category" onAction="#handleAddCategory" style="-fx-background-color: #2196F3; -fx-text-fill: white;"/>
             </HBox>
 
             <TableView fx:id="ingredientTable" prefHeight="400">
                 <columns>
                     <TableColumn fx:id="idColumn" text="ID" prefWidth="50"/>
-                    <TableColumn fx:id="nameColumn" text="Tên nguyên liệu" prefWidth="200"/>
-                    <TableColumn fx:id="unitColumn" text="Đơn vị" prefWidth="100"/>
-                    <TableColumn fx:id="stockColumn" text="Tồn kho" prefWidth="100"/>
-                    <TableColumn fx:id="minStockColumn" text="Tồn kho tối thiểu" prefWidth="150"/>
-                    <TableColumn fx:id="priceColumn" text="Giá/Đơn vị" prefWidth="120"/>
-
-                    <!-- Cột Thao tác -->
-                    <TableColumn fx:id="actionColumn" text="Thao tác" prefWidth="120"/>
+                    <TableColumn fx:id="nameColumn" text="Ingredient Name" prefWidth="200"/>
+                    <TableColumn fx:id="unitColumn" text="Unit" prefWidth="100"/>
+                    <TableColumn fx:id="stockColumn" text="Stock" prefWidth="100"/>
+                    <TableColumn fx:id="minStockColumn" text="Minimum Stock" prefWidth="150"/>
+                    <TableColumn fx:id="priceColumn" text="Price/Unit" prefWidth="120"/>
+                    <TableColumn fx:id="actionColumn" text="Actions" prefWidth="120"/>
                 </columns>
             </TableView>
         </VBox>

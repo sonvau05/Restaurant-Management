@@ -15,15 +15,10 @@ public class EmployeeRepository {
 
     private final Connection connection;
 
-    // Constructor nhận đối tượng Connection
     public EmployeeRepository(Connection connection) {
         this.connection = connection;
     }
 
-    /**
-     * Lưu thông tin nhân viên vào bảng Employees.
-     * Các trường: FullName, DateOfBirth, PhoneNumber, Address, Role, HireDate.
-     */
     public boolean saveEmployee(String fullName, Date dateOfBirth, String phoneNumber, String address, String role, Date hireDate) {
         String query = "INSERT INTO Employees (FullName, DateOfBirth, PhoneNumber, Address, Role, HireDate) VALUES (?, ?, ?, ?, ?, ?)";
         try {
@@ -39,14 +34,11 @@ public class EmployeeRepository {
                 return true;
             }
         } catch (SQLException ex) {
-            System.out.println("Lỗi SQL (saveEmployee): " + ex.getMessage());
+            System.out.println("ERROR SQL (saveEmployee): " + ex.getMessage());
             return false;
         }
     }
 
-    /**
-     * Lấy danh sách tất cả nhân viên từ bảng Employees.
-     */
     public List<Employee> getAllEmployees() {
         List<Employee> employees = new ArrayList<>();
         String query = "SELECT * FROM Employees";
@@ -68,14 +60,11 @@ public class EmployeeRepository {
                 }
             }
         } catch (SQLException ex) {
-            System.out.println("Lỗi SQL (getAllEmployees): " + ex.getMessage());
+            System.out.println("ERROR SQL (getAllEmployees): " + ex.getMessage());
         }
         return employees;
     }
 
-    /**
-     * Cập nhật thông tin nhân viên.
-     */
     public boolean updateEmployee(Employee employee) {
         String query = "UPDATE Employees SET FullName = ?, DateOfBirth = ?, PhoneNumber = ?, Address = ?, Role = ?, HireDate = ? WHERE EmployeeID = ?";
         try {
@@ -92,14 +81,11 @@ public class EmployeeRepository {
                 return rowsUpdated > 0;
             }
         } catch (SQLException ex) {
-            System.out.println("Lỗi SQL (updateEmployee): " + ex.getMessage());
+            System.out.println("ERROR SQL (updateEmployee): " + ex.getMessage());
             return false;
         }
     }
 
-    /**
-     * Xóa nhân viên theo EmployeeID.
-     */
     public boolean deleteEmployee(int employeeID) {
         String query = "DELETE FROM Employees WHERE EmployeeID = ?";
         try {
@@ -110,14 +96,11 @@ public class EmployeeRepository {
                 return rowsDeleted > 0;
             }
         } catch (SQLException ex) {
-            System.out.println("Lỗi SQL (deleteEmployee): " + ex.getMessage());
+            System.out.println("ERROR SQL (deleteEmployee): " + ex.getMessage());
             return false;
         }
     }
 
-    /**
-     * Tìm kiếm nhân viên theo tên (theo kiểu tìm kiếm chứa).
-     */
     public List<Employee> getEmployeesByName(String name) {
         List<Employee> employees = new ArrayList<>();
         String query = "SELECT * FROM Employees WHERE FullName LIKE ?";
@@ -141,7 +124,7 @@ public class EmployeeRepository {
                 }
             }
         } catch (SQLException ex) {
-            System.out.println("Lỗi SQL (getEmployeesByName): " + ex.getMessage());
+            System.out.println("ERROR SQL (getEmployeesByName): " + ex.getMessage());
         }
         return employees;
     }

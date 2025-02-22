@@ -31,7 +31,6 @@ public class Ingredient {
         this.pricePerUnit = new SimpleDoubleProperty(0.0);
     }
 
-    // Getter
     public int getId() { return id.get(); }
     public String getName() { return name.get(); }
     public String getCategory() { return category.get(); }
@@ -40,16 +39,14 @@ public class Ingredient {
     public double getMinStock() { return minStock.get(); }
     public double getPricePerUnit() { return pricePerUnit.get(); }
 
-    // Setter (Thêm setter để sửa lỗi)
     public void setId(int id) { this.id.set(id); }
-    public void setName(String name) { this.name.set(name); }  // 🔹 Thêm setName()
+    public void setName(String name) { this.name.set(name); }
     public void setCategory(String category) { this.category.set(category); }
     public void setUnit(String unit) { this.unit.set(unit); }
     public void setStock(double stock) { this.stock.set(stock); }
     public void setMinStock(double minStock) { this.minStock.set(minStock); }
     public void setPricePerUnit(double pricePerUnit) { this.pricePerUnit.set(pricePerUnit); }
 
-    // Property methods (dùng cho JavaFX binding)
     public IntegerProperty idProperty() { return id; }
     public StringProperty nameProperty() { return name; }
     public StringProperty categoryProperty() { return category; }

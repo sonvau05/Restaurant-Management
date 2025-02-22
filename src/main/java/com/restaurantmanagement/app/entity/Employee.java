@@ -15,7 +15,6 @@ public class Employee {
     private final StringProperty role;
     private final ObjectProperty<Date> hireDate;
 
-    // Constructor
     public Employee(int employeeID, String fullName, Date dateOfBirth, String phoneNumber, String address, String role, Date hireDate) {
         this.employeeID = new SimpleObjectProperty<>(employeeID);
         this.fullName = new SimpleStringProperty(fullName);
@@ -26,7 +25,6 @@ public class Employee {
         this.hireDate = new SimpleObjectProperty<>(hireDate);
     }
 
-    // Getters & setters cho giá trị thực
     public int getEmployeeID() {
         return employeeID.get();
     }
@@ -70,7 +68,6 @@ public class Employee {
         this.hireDate.set(hireDate);
     }
 
-    // Property getters để sử dụng trong TableView
     public StringProperty fullNameProperty() {
         return fullName;
     }

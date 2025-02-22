@@ -23,10 +23,8 @@ public class ManagerMenuController {
     private TextField searchField;
     @FXML
     private Button categoriesButton;
-
     @FXML
     private TableView<MenuItems> menuItemsTable;
-
     @FXML
     private TableColumn<MenuItems, Integer> colId;
     @FXML
@@ -44,18 +42,13 @@ public class ManagerMenuController {
 
     @FXML
     private void initialize() {
-        // Set up table columns
-        // Giả sử MenuItems có các property: idProperty(), nameProperty(), categoryProperty(), descriptionProperty(), priceProperty()
         colId.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
         colName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
         colCategory.setCellValueFactory(cellData -> cellData.getValue().categoryProperty());
         colDescription.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
         colPrice.setCellValueFactory(cellData -> cellData.getValue().priceProperty().asObject());
 
-        // Load menu items vào bảng
         loadMenuItems();
-
-        // Load danh mục (giả sử phương thức getAllCategories() tồn tại trong MenuService)
         categoriesList.setAll(managerMenuService.getAllCategories());
     }
 
@@ -77,48 +70,44 @@ public class ManagerMenuController {
     @FXML
     private void handleAdd(ActionEvent event) {
         TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Thêm món ăn mới");
-        dialog.setHeaderText("Nhập tên và giá món ăn mới");
-        dialog.setContentText("Tên món ăn:");
+        dialog.setTitle("Add New Menu Item");
+        dialog.setHeaderText("Enter the name and price of the new menu item");
+        dialog.setContentText("Menu item name:");
 
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
             String itemName = result.get();
 
-            // Lấy giá
             TextInputDialog priceDialog = new TextInputDialog();
-            priceDialog.setTitle("Thêm giá món ăn");
-            priceDialog.setHeaderText("Nhập giá món ăn");
-            priceDialog.setContentText("Giá món ăn:");
+            priceDialog.setTitle("Add Menu Item Price");
+            priceDialog.setHeaderText("Enter the price of the menu item");
+            priceDialog.setContentText("Price:");
 
             Optional<String> priceResult = priceDialog.showAndWait();
             if (priceResult.isPresent()) {
                 String priceString = priceResult.get();
                 double price;
 
-                // Kiểm tra nếu giá nhập vào là số hợp lệ
                 try {
                     price = Double.parseDouble(priceString);
                 } catch (NumberFormatException e) {
-                    showAlert(Alert.AlertType.ERROR, "Lỗi giá", "Giá món ăn không hợp lệ. Vui lòng nhập một số.");
+                    showAlert(Alert.AlertType.ERROR, "Price Error", "Invalid price. Please enter a number.");
                     return;
                 }
 
-                // Lấy mô tả
                 TextInputDialog descriptionDialog = new TextInputDialog();
-                descriptionDialog.setTitle("Thêm mô tả món ăn");
-                descriptionDialog.setHeaderText("Nhập mô tả món ăn");
-                descriptionDialog.setContentText("Mô tả:");
+                descriptionDialog.setTitle("Add Menu Item Description");
+                descriptionDialog.setHeaderText("Enter the description of the menu item");
+                descriptionDialog.setContentText("Description:");
 
                 Optional<String> descriptionResult = descriptionDialog.showAndWait();
                 if (descriptionResult.isPresent()) {
                     String description = descriptionResult.get();
 
-                    // Chọn danh mục bằng ChoiceDialog
                     ChoiceDialog<Category> categoryDialog = new ChoiceDialog<>(null, categoriesList);
-                    categoryDialog.setTitle("Chọn danh mục món ăn");
-                    categoryDialog.setHeaderText("Chọn danh mục món ăn");
-                    categoryDialog.setContentText("Danh mục:");
+                    categoryDialog.setTitle("Select Menu Item Category");
+                    categoryDialog.setHeaderText("Select Menu Item Category");
+                    categoryDialog.setContentText("Category:");
 
                     categoryDialog.setResultConverter(dialogButton -> {
                         if (dialogButton == ButtonType.OK) {
@@ -132,7 +121,6 @@ public class ManagerMenuController {
                         Category selectedCategory = categoryResult.get();
                         int categoryId = selectedCategory.getCategoryID();
 
-                        // Thêm món ăn sử dụng service
                         managerMenuService.addMenuItem(itemName, price, description, categoryId);
                         loadMenuItems();
                     }
@@ -146,46 +134,44 @@ public class ManagerMenuController {
         MenuItems selectedItem = menuItemsTable.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
             TextInputDialog nameDialog = new TextInputDialog(selectedItem.getName());
-            nameDialog.setTitle("Sửa món ăn");
-            nameDialog.setHeaderText("Nhập tên mới");
-            nameDialog.setContentText("Tên món ăn:");
+            nameDialog.setTitle("Edit Menu Item");
+            nameDialog.setHeaderText("Enter the new name");
+            nameDialog.setContentText("Menu item name:");
 
             Optional<String> nameResult = nameDialog.showAndWait();
             if (nameResult.isPresent()) {
                 String newName = nameResult.get();
 
                 TextInputDialog priceDialog = new TextInputDialog(String.valueOf(selectedItem.getPrice()));
-                priceDialog.setTitle("Sửa giá món ăn");
-                priceDialog.setHeaderText("Nhập giá mới");
-                priceDialog.setContentText("Giá món ăn:");
+                priceDialog.setTitle("Edit Menu Item Price");
+                priceDialog.setHeaderText("Enter the new price");
+                priceDialog.setContentText("Price:");
 
                 Optional<String> priceResult = priceDialog.showAndWait();
                 if (priceResult.isPresent()) {
                     String priceString = priceResult.get();
                     double newPrice;
 
-                    // Kiểm tra nếu giá nhập vào là số hợp lệ
                     try {
                         newPrice = Double.parseDouble(priceString);
                     } catch (NumberFormatException e) {
-                        showAlert(Alert.AlertType.ERROR, "Lỗi giá", "Giá món ăn không hợp lệ. Vui lòng nhập một số.");
+                        showAlert(Alert.AlertType.ERROR, "Price Error", "Invalid price. Please enter a number.");
                         return;
                     }
 
                     TextInputDialog descriptionDialog = new TextInputDialog(selectedItem.getDescription());
-                    descriptionDialog.setTitle("Sửa mô tả món ăn");
-                    descriptionDialog.setHeaderText("Nhập mô tả mới");
-                    descriptionDialog.setContentText("Mô tả:");
+                    descriptionDialog.setTitle("Edit Menu Item Description");
+                    descriptionDialog.setHeaderText("Enter the new description");
+                    descriptionDialog.setContentText("Description:");
 
                     Optional<String> descriptionResult = descriptionDialog.showAndWait();
                     if (descriptionResult.isPresent()) {
                         String newDescription = descriptionResult.get();
 
-                        // Chọn danh mục bằng ChoiceDialog
                         ChoiceDialog<Category> categoryDialog = new ChoiceDialog<>(null, categoriesList);
-                        categoryDialog.setTitle("Chọn danh mục món ăn");
-                        categoryDialog.setHeaderText("Chọn danh mục món ăn");
-                        categoryDialog.setContentText("Danh mục:");
+                        categoryDialog.setTitle("Select Menu Item Category");
+                        categoryDialog.setHeaderText("Select Menu Item Category");
+                        categoryDialog.setContentText("Category:");
 
                         categoryDialog.setResultConverter(dialogButton -> {
                             if (dialogButton == ButtonType.OK) {
@@ -206,7 +192,7 @@ public class ManagerMenuController {
                 }
             }
         } else {
-            showAlert(Alert.AlertType.INFORMATION, "Thông báo", "Vui lòng chọn món ăn để chỉnh sửa.");
+            showAlert(Alert.AlertType.INFORMATION, "Notification", "Please select a menu item to edit.");
         }
     }
 
@@ -215,9 +201,9 @@ public class ManagerMenuController {
         MenuItems selectedItem = menuItemsTable.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
             Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
-            confirmationAlert.setTitle("Xác nhận xóa");
-            confirmationAlert.setHeaderText("Bạn có chắc chắn muốn xóa món ăn này?");
-            confirmationAlert.setContentText("Món ăn: " + selectedItem.getName());
+            confirmationAlert.setTitle("Confirm Deletion");
+            confirmationAlert.setHeaderText("Are you sure you want to delete this menu item?");
+            confirmationAlert.setContentText("Menu Item: " + selectedItem.getName());
 
             Optional<ButtonType> result = confirmationAlert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -225,7 +211,7 @@ public class ManagerMenuController {
                 loadMenuItems();
             }
         } else {
-            showAlert(Alert.AlertType.INFORMATION, "Thông báo", "Vui lòng chọn món ăn để xóa.");
+            showAlert(Alert.AlertType.INFORMATION, "Notification", "Please select a menu item to delete.");
         }
     }
 
@@ -239,9 +225,9 @@ public class ManagerMenuController {
         } catch (IOException e) {
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Lỗi");
-            alert.setHeaderText("Không thể tải danh mục");
-            alert.setContentText("Đã xảy ra lỗi khi chuyển đến danh mục.");
+            alert.setTitle("Error");
+            alert.setHeaderText("Unable to load categories");
+            alert.setContentText("An error occurred while switching to categories.");
             alert.showAndWait();
         }
     }

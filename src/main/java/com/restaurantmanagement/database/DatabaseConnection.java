@@ -12,14 +12,14 @@ public class DatabaseConnection {
     public static Connection getConnection() {
         Connection conn = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver"); // Kiểm tra dòng này
+            Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("Kết nối thành công!");
+            System.out.println("Connection successful!");
         } catch (ClassNotFoundException e) {
-            System.out.println("Driver MySQL không được tìm thấy!");
+            System.out.println("MySQL driver not found!");
             e.printStackTrace();
         } catch (SQLException e) {
-            System.out.println("Lỗi kết nối đến MySQL!");
+            System.out.println("Connection error to MySQL!");
             e.printStackTrace();
         }
         return conn;

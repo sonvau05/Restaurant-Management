@@ -7,7 +7,6 @@ public class User {
     private Role role;
     private String createdAt;
 
-    // Constructor, Getters, and Setters
     public User(int userId, String username, String passwordHash, Role role, String createdAt) {
         this.userId = userId;
         this.username = username;

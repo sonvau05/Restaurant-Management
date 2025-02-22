@@ -6,5 +6,4 @@
     <Label text="Order Management" />
     <Button text="Create New Order" />
     <Button text="View Order History" />
-    <Button fx:id="backButton" onAction="#handleBack" text="Back" />
 </VBox>

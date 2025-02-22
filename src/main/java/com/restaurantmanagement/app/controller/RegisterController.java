@@ -45,17 +45,17 @@ public class RegisterController {
         String roleString = roleComboBox.getValue();
 
         if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || roleString == null) {
-            showAlert("Thông báo", "Vui lòng nhập đầy đủ thông tin.", AlertType.WARNING);
+            showAlert("Notification", "Please fill in all information.", AlertType.WARNING);
             return;
         }
 
         if (!password.equals(confirmPassword)) {
-            showAlert("Thông báo", "Mật khẩu không khớp.", AlertType.WARNING);
+            showAlert("Notification", "Passwords do not match.", AlertType.WARNING);
             return;
         }
 
         if (userService.getUserByUsername(username) != null) {
-            showAlert("Thông báo", "Tài khoản đã tồn tại.", AlertType.WARNING);
+            showAlert("Notification", "Account already exists.", AlertType.WARNING);
             return;
         }
 
@@ -64,9 +64,8 @@ public class RegisterController {
         User newUser = new User(0, username, passwordHash, role, null);
         userRepository.saveUser(newUser);
 
-        showAlert("Thông báo", "Đăng ký thành công!", AlertType.INFORMATION);
+        showAlert("Notification", "Registration successful!", AlertType.INFORMATION);
 
-        // Chuyển sang màn hình đăng nhập trong cùng tab
         navigateToLogin();
     }
 
@@ -81,11 +80,11 @@ public class RegisterController {
             Parent loginView = loader.load();
             Stage stage = (Stage) usernameField.getScene().getWindow();
             stage.setScene(new Scene(loginView));
-            stage.setTitle("Đăng nhập");
+            stage.setTitle("Login");
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert("Lỗi", "Không thể mở màn hình đăng nhập.", AlertType.ERROR);
+            showAlert("Error", "Cannot open the login screen.", AlertType.ERROR);
         }
     }
 

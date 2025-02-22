@@ -3,87 +3,78 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.util.*?>
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.restaurantmanagement.app.controller.InventoryController">
-    <!-- Khu vực trên cùng: Tiêu đề -->
     <top>
-        <Label text="Quản lý Kho Nguyên Liệu" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-padding: 15px; -fx-background-color: #4CAF50; -fx-text-fill: white;" />
+        <Label text="Inventory Management" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-padding: 15px; -fx-background-color: #4CAF50; -fx-text-fill: white;" />
     </top>
 
-    <!-- Khu vực giữa: Sử dụng HBox để chứa form nhập và hủy nguyên liệu -->
     <center>
         <HBox spacing="20" style="-fx-padding: 20px; -fx-alignment: center;">
-            <!-- Khu vực trái: Form nhập kho -->
             <VBox spacing="15" style="-fx-padding: 20px; width: 300px; -fx-background-color: #f4f4f9; -fx-border-radius: 10px; -fx-border-color: #cccccc;">
-                <Label text="Nhập Kho" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333333;" />
+                <Label text="Stock In" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333333;" />
                 <HBox spacing="15">
-                    <Label text="Nguyên liệu:" />
+                    <Label text="Ingredient:" />
                     <ComboBox fx:id="ingredientComboBox" />
                 </HBox>
                 <HBox spacing="15">
-                    <Label text="Nhà cung cấp:" />
+                    <Label text="Supplier:" />
                     <TextField fx:id="supplierField" />
                 </HBox>
                 <HBox spacing="15">
-                    <Label text="Số lượng:" />
+                    <Label text="Quantity:" />
                     <TextField fx:id="quantityField" />
                 </HBox>
                 <HBox spacing="15">
-                    <Label text="Đơn vị:" />
+                    <Label text="Unit:" />
                     <TextField fx:id="unitField" />
                 </HBox>
                 <HBox spacing="15">
-                    <Label text="Giá:" />
+                    <Label text="Price:" />
                     <TextField fx:id="priceField" />
                 </HBox>
-                <Button text="Nhập Kho" fx:id="addPurchaseButton" onAction="#handleAddPurchase" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px;" />
+                <Button text="Stock In" fx:id="addPurchaseButton" onAction="#handleAddPurchase" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px;" />
             </VBox>
 
-            <!-- Khu vực phải: Form hủy nguyên liệu -->
             <VBox spacing="15" style="-fx-padding: 20px; width: 300px; -fx-background-color: #f4f4f9; -fx-border-radius: 10px; -fx-border-color: #cccccc;">
-                <Label text="Hủy Nguyên Liệu" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333333;" />
+                <Label text="Cancel Ingredient" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333333;" />
                 <HBox spacing="15">
-                    <Label text="Nguyên liệu:" />
+                    <Label text="Ingredient:" />
                     <ComboBox fx:id="cancelIngredientComboBox" />
                 </HBox>
                 <HBox spacing="15">
-                    <Label text="Số lượng:" />
+                    <Label text="Quantity:" />
                     <TextField fx:id="cancelQuantityField" />
                 </HBox>
                 <HBox spacing="15">
-                    <Label text="Đơn vị:" />
+                    <Label text="Unit:" />
                     <TextField fx:id="cancelUnitField" />
                 </HBox>
                 <HBox spacing="15">
-                    <Label text="Ghi chú:" />
+                    <Label text="Note:" />
                     <TextField fx:id="cancelNoteField" />
                 </HBox>
-                <Button text="Hủy Nguyên Liệu" fx:id="cancelIngredientButton" onAction="#handleCancelIngredient" style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-size: 14px;" />
+                <Button text="Cancel Ingredient" fx:id="cancelIngredientButton" onAction="#handleCancelIngredient" style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-size: 14px;" />
             </VBox>
         </HBox>
     </center>
 
-    <!-- Khu vực dưới: Bảng hiển thị lịch sử giao dịch -->
     <bottom>
         <VBox spacing="15" style="-fx-padding: 20px;">
-            <!-- Bố trí các ô lọc vào VBox -->
             <HBox spacing="15">
-                <TextField fx:id="ingredientFilterField" promptText="Lọc theo Nguyên liệu" style="-fx-padding: 5px; -fx-font-size: 14px;" />
-                <!-- Thay đổi TextField thành DatePicker -->
+                <TextField fx:id="ingredientFilterField" promptText="Filter by Ingredient" style="-fx-padding: 5px; -fx-font-size: 14px;" />
                 <DatePicker fx:id="dateFilterField" />
-
-                <TextField fx:id="transactionTypeFilterField" promptText="Lọc theo Loại giao dịch" style="-fx-padding: 5px; -fx-font-size: 14px;" />
-                <Button fx:id="filterButton" text="Lọc" onAction="#handleFilter" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 14px;" />
+                <TextField fx:id="transactionTypeFilterField" promptText="Filter by Transaction Type" style="-fx-padding: 5px; -fx-font-size: 14px;" />
+                <Button fx:id="filterButton" text="Filter" onAction="#handleFilter" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 14px;" />
             </HBox>
 
-            <!-- Bảng hiển thị lịch sử giao dịch -->
             <TableView fx:id="inventoryLogTable" prefWidth="900" prefHeight="300" style="-fx-background-color: #ffffff; -fx-border-color: #cccccc; -fx-border-radius: 5px;">
                 <columns>
-                    <TableColumn text="Nguyên liệu" fx:id="logIngredientColumn" />
-                    <TableColumn text="Loại giao dịch" fx:id="logTransactionTypeColumn" />
-                    <TableColumn text="Số lượng" fx:id="logQuantityColumn" />
-                    <TableColumn text="Đơn vị" fx:id="logUnitColumn" />
-                    <TableColumn text="Giá" fx:id="logPriceColumn" />
-                    <TableColumn text="Ghi chú" fx:id="logNoteColumn" prefWidth="250" />
-                    <TableColumn text="Ngày giao dịch" fx:id="logDateColumn" />
+                    <TableColumn text="Ingredient" fx:id="logIngredientColumn" />
+                    <TableColumn text="Transaction Type" fx:id="logTransactionTypeColumn" />
+                    <TableColumn text="Quantity" fx:id="logQuantityColumn" />
+                    <TableColumn text="Unit" fx:id="logUnitColumn" />
+                    <TableColumn text="Price" fx:id="logPriceColumn" />
+                    <TableColumn text="Note" fx:id="logNoteColumn" prefWidth="250" />
+                    <TableColumn text="Transaction Date" fx:id="logDateColumn" />
                 </columns>
             </TableView>
         </VBox>

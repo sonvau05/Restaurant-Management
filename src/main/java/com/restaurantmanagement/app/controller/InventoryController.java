@@ -39,7 +39,6 @@ public class InventoryController {
         loadIngredients();
         loadInventoryLog();
 
-        // Gán giá trị cho cột bảng
         logIngredientColumn.setCellValueFactory(cellData -> cellData.getValue().ingredientProperty());
         logTransactionTypeColumn.setCellValueFactory(cellData -> cellData.getValue().transactionTypeProperty());
         logQuantityColumn.setCellValueFactory(cellData -> cellData.getValue().quantityProperty().asObject());
@@ -47,7 +46,6 @@ public class InventoryController {
         logNoteColumn.setCellValueFactory(cellData -> cellData.getValue().noteProperty());
         logUnitColumn.setCellValueFactory(cellData -> cellData.getValue().unitProperty());
         logDateColumn.setCellValueFactory(cellData -> cellData.getValue().logDateProperty());
-
     }
 
     private void connectDB() {
@@ -55,7 +53,7 @@ public class InventoryController {
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/Restaurant", "root", "");
         } catch (SQLException e) {
             e.printStackTrace();
-            showAlert("Lỗi kết nối", "Không thể kết nối đến cơ sở dữ liệu!", Alert.AlertType.ERROR);
+            showAlert("Connection Error", "Unable to connect to the database!", Alert.AlertType.ERROR);
         }
     }
 
@@ -114,7 +112,7 @@ public class InventoryController {
         String unit = unitField.getText().trim();
 
         if (ingredientName == null || quantityText.isEmpty() || priceText.isEmpty() || unit.isEmpty()) {
-            showAlert("Lỗi", "Vui lòng nhập đầy đủ thông tin, bao gồm đơn vị!", Alert.AlertType.ERROR);
+            showAlert("Error", "Please fill in all information, including the unit!", Alert.AlertType.ERROR);
             return;
         }
 
@@ -123,7 +121,7 @@ public class InventoryController {
             double price = Double.parseDouble(priceText);
 
             if (quantity <= 0 || price < 0) {
-                showAlert("Lỗi", "Số lượng và giá phải lớn hơn 0!", Alert.AlertType.ERROR);
+                showAlert("Error", "Quantity and price must be greater than 0!", Alert.AlertType.ERROR);
                 return;
             }
 
@@ -133,18 +131,18 @@ public class InventoryController {
                 ResultSet rs = stmt.executeQuery();
 
                 if (!rs.next()) {
-                    showAlert("Lỗi", "Không tìm thấy nguyên liệu!", Alert.AlertType.ERROR);
+                    showAlert("Error", "Ingredient not found!", Alert.AlertType.ERROR);
                     return;
                 }
                 int ingredientId = rs.getInt("IngredientID");
 
                 String getTransactionTypeIdQuery = "SELECT TransactionTypeID FROM TransactionTypes WHERE LOWER(TypeName) = LOWER(?)";
                 try (PreparedStatement stmt2 = conn.prepareStatement(getTransactionTypeIdQuery)) {
-                    stmt2.setString(1, "Nhập kho");
+                    stmt2.setString(1, "Stock In");
                     ResultSet rs2 = stmt2.executeQuery();
 
                     if (!rs2.next()) {
-                        showAlert("Lỗi", "Loại giao dịch 'Nhập kho' không tồn tại!", Alert.AlertType.ERROR);
+                        showAlert("Error", "Transaction type 'Stock In' does not exist!", Alert.AlertType.ERROR);
                         return;
                     }
                     int transactionTypeId = rs2.getInt("TransactionTypeID");
@@ -159,23 +157,22 @@ public class InventoryController {
                         stmt3.setInt(3, ingredientId);
                         stmt3.setFloat(4, quantity);
                         stmt3.setDouble(5, price);
-                        stmt3.setString(6, "Nhập hàng từ nhà cung cấp: " + supplier);
+                        stmt3.setString(6, "Stock In from supplier: " + supplier);
                         stmt3.setString(7, unit);
                         stmt3.executeUpdate();
                     }
                 }
             }
-            showAlert("Thành công", "Nhập kho thành công!", Alert.AlertType.INFORMATION);
-            loadInventoryLog(); // Cập nhật bảng nhật ký kho
+            showAlert("Success", "Stock in successful!", Alert.AlertType.INFORMATION);
+            loadInventoryLog();
 
-            // Xóa dữ liệu trong các trường nhập
             supplierField.clear();
             ingredientComboBox.getSelectionModel().clearSelection();
             quantityField.clear();
             priceField.clear();
             unitField.clear();
         } catch (SQLException | NumberFormatException e) {
-            showAlert("Lỗi", "Dữ liệu không hợp lệ hoặc lỗi kết nối!", Alert.AlertType.ERROR);
+            showAlert("Error", "Invalid data or connection error!", Alert.AlertType.ERROR);
             e.printStackTrace();
         }
     }
@@ -188,42 +185,39 @@ public class InventoryController {
         String unit = cancelUnitField.getText().trim();
 
         if (ingredientName == null || quantityText.isEmpty() || note.isEmpty() || unit.isEmpty()) {
-            showAlert("Lỗi", "Vui lòng nhập đầy đủ thông tin, bao gồm đơn vị!", Alert.AlertType.ERROR);
+            showAlert("Error", "Please fill in all information, including the unit!", Alert.AlertType.ERROR);
             return;
         }
 
         try {
             float quantity = Float.parseFloat(quantityText);
             if (quantity <= 0) {
-                showAlert("Lỗi", "Số lượng phải lớn hơn 0!", Alert.AlertType.ERROR);
+                showAlert("Error", "Quantity must be greater than 0!", Alert.AlertType.ERROR);
                 return;
             }
 
-            // Lấy IngredientID từ Ingredients
             String getIngredientIdQuery = "SELECT IngredientID FROM Ingredients WHERE Name = ?";
             try (PreparedStatement stmt = conn.prepareStatement(getIngredientIdQuery)) {
                 stmt.setString(1, ingredientName);
                 ResultSet rs = stmt.executeQuery();
 
                 if (!rs.next()) {
-                    showAlert("Lỗi", "Không tìm thấy nguyên liệu!", Alert.AlertType.ERROR);
+                    showAlert("Error", "Ingredient not found!", Alert.AlertType.ERROR);
                     return;
                 }
                 int ingredientId = rs.getInt("IngredientID");
 
-                // Lấy TransactionTypeID cho "Hủy nguyên liệu"
                 String getTransactionTypeIdQuery = "SELECT TransactionTypeID FROM TransactionTypes WHERE LOWER(TypeName) = LOWER(?)";
                 try (PreparedStatement stmt2 = conn.prepareStatement(getTransactionTypeIdQuery)) {
-                    stmt2.setString(1, "Hủy nguyên liệu");
+                    stmt2.setString(1, "Cancel Ingredient");
                     ResultSet rs2 = stmt2.executeQuery();
 
                     if (!rs2.next()) {
-                        showAlert("Lỗi", "Loại giao dịch 'Hủy nguyên liệu' không tồn tại!", Alert.AlertType.ERROR);
+                        showAlert("Error", "Transaction type 'Cancel Ingredient' does not exist!", Alert.AlertType.ERROR);
                         return;
                     }
                     int transactionTypeId = rs2.getInt("TransactionTypeID");
 
-                    // Chỉ lưu giao dịch vào InventoryTransactions, không cập nhật Stock
                     String insertTransactionQuery = """
                 INSERT INTO InventoryTransactions (TransactionTypeID, IngredientID, Quantity, Price, Note, Unit)
                 VALUES (?, ?, ?, ?, ?, ?)
@@ -232,7 +226,7 @@ public class InventoryController {
                         stmt3.setInt(1, transactionTypeId);
                         stmt3.setInt(2, ingredientId);
                         stmt3.setFloat(3, quantity);
-                        stmt3.setDouble(4, 0.0); // Giá = 0 vì đây là hủy nguyên liệu
+                        stmt3.setDouble(4, 0.0);
                         stmt3.setString(5, note);
                         stmt3.setString(6, unit);
                         stmt3.executeUpdate();
@@ -240,20 +234,18 @@ public class InventoryController {
                 }
             }
 
-            showAlert("Thành công", "Hủy nguyên liệu thành công!", Alert.AlertType.INFORMATION);
+            showAlert("Success", "Ingredient cancellation successful!", Alert.AlertType.INFORMATION);
             loadInventoryLog();
 
-            // Xóa dữ liệu trong các trường nhập
             cancelIngredientComboBox.getSelectionModel().clearSelection();
             cancelQuantityField.clear();
             cancelNoteField.clear();
             cancelUnitField.clear();
         } catch (SQLException | NumberFormatException e) {
-            showAlert("Lỗi", "Dữ liệu không hợp lệ hoặc lỗi kết nối!", Alert.AlertType.ERROR);
+            showAlert("Error", "Invalid data or connection error!", Alert.AlertType.ERROR);
             e.printStackTrace();
         }
     }
-
 
     @FXML
     private void handleFilter() {

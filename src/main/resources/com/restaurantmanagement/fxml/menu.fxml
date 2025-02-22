@@ -6,13 +6,11 @@
 <?import javafx.scene.control.TableColumn?>
 <AnchorPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.restaurantmanagement.app.controller.ManagerMenuController">
     <VBox spacing="10" AnchorPane.topAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10">
-        <!-- Search Section -->
         <HBox spacing="10">
             <TextField promptText="Search Menu Item..." fx:id="searchField"/>
             <Button text="Search" fx:id="searchButton" onAction="#handleSearch"/>
         </HBox>
 
-        <!-- TableView -->
         <TableView fx:id="menuItemsTable">
             <columns>
                 <TableColumn text="ID" fx:id="colId" />
@@ -23,7 +21,6 @@
             </columns>
         </TableView>
 
-        <!-- Action Buttons -->
         <HBox spacing="10">
             <Button text="Add" fx:id="addButton" onAction="#handleAdd"/>
             <Button text="Edit" fx:id="editButton" onAction="#handleEdit"/>
@@ -31,7 +28,6 @@
             <Button text="Categories" fx:id="categoriesButton" onAction="#handleCategories"/>
         </HBox>
 
-        <!-- Category ComboBox (For Add/Edit) -->
         <ComboBox fx:id="categoryComboBox" promptText="Select Category" visible="false"/>
     </VBox>
 </AnchorPane>

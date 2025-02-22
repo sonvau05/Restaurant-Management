@@ -20,7 +20,7 @@ public class OrderViewService {
 
     public boolean updateOrderStatus(int orderId, String selectedStatus) {
         try {
-            // Gọi phương thức từ repository để cập nhật trạng thái
+
             return orderViewRepository.updateOrderStatus(orderId, selectedStatus);
         } catch (SQLException e) {
             e.printStackTrace();

@@ -2,7 +2,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.restaurantmanagement.app.controller.LogController">
-    <!-- Khu vực trên cùng: Tiêu đề -->
     <top>
         <Label text="Stock Management" />
         <HBox spacing="10">

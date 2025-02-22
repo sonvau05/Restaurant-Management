@@ -11,12 +11,9 @@
 <?import javafx.scene.layout.VBox?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.restaurantmanagement.app.controller.EmployeeController">
-    <!-- Main container -->
     <VBox spacing="20" alignment="CENTER" AnchorPane.topAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10">
-        <!-- Thanh tìm kiếm -->
         <TextField fx:id="employeeNameField" promptText="Search by Employee Name" onAction="#handleSearchEmployee"/>
 
-        <!-- TableView danh sách nhân viên -->
         <TableView fx:id="employeeTable" prefHeight="200" prefWidth="600">
             <columns>
                 <TableColumn fx:id="fullNameColumn" text="Full Name" />
@@ -28,7 +25,6 @@
             </columns>
         </TableView>
 
-        <!-- HBox chứa các nút thao tác -->
         <HBox spacing="10" alignment="CENTER">
             <Button text="Add Employee" onAction="#handleAddEmployee"/>
             <Button text="Update Employee" onAction="#handleUpdateEmployee"/>
@@ -37,7 +33,6 @@
         </HBox>
     </VBox>
 
-    <!-- TableView hiển thị bảng nghỉ phép (đặt tên fx:id: leaveRecordsTable) -->
     <TableView fx:id="leaveRecordsTable" prefHeight="150" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10">
         <columns>
             <TableColumn fx:id="leaveStartColumn" text="Start Date" />

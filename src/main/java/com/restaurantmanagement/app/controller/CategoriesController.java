@@ -35,8 +35,10 @@ public class CategoriesController {
         List<Category> categoryList = categoryService.getAllCategories();
         categoryList.sort(Comparator.comparingInt(Category::getCategoryID));
 
-        colCategoryID.setCellValueFactory(cellData -> cellData.getValue().categoryIDProperty().asObject());
-        colCategoryName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
+        colCategoryID.setCellValueFactory(cellData
+                -> cellData.getValue().categoryIDProperty().asObject());
+        colCategoryName.setCellValueFactory(cellData
+                -> cellData.getValue().nameProperty());
 
         categoriesTable.setItems(javafx.collections.FXCollections.observableArrayList(categoryList));
     }
@@ -65,7 +67,7 @@ public class CategoriesController {
             dialog.showAndWait().ifPresent(updatedName -> {
                 selectedCategory.setName(updatedName);
                 categoryService.updateCategory(selectedCategory);
-                loadCategories(); // Reload category list after editing
+                loadCategories();
             });
         } else {
             showAlert("No Category Selected", "Please select a category to edit.");

@@ -1,26 +1,21 @@
--- 📌 Tạo cơ sở dữ liệu
 CREATE DATABASE IF NOT EXISTS Restaurant;
 USE Restaurant;
 
--- 1. Bảng danh mục nguyên liệu (IngredientCategories)
 CREATE TABLE IF NOT EXISTS IngredientCategories (
                                                     CategoryID INT PRIMARY KEY AUTO_INCREMENT,
                                                     Name VARCHAR(100) NOT NULL UNIQUE
 ) ENGINE=InnoDB;
 
--- 2. Bảng danh mục món ăn (Categories)
 CREATE TABLE IF NOT EXISTS Categories (
                                           CategoryID INT PRIMARY KEY AUTO_INCREMENT,
                                           Name VARCHAR(50) NOT NULL UNIQUE
 ) ENGINE=InnoDB;
 
--- 3. Bảng loại giao dịch kho (TransactionTypes)
 CREATE TABLE IF NOT EXISTS TransactionTypes (
                                                 TransactionTypeID INT PRIMARY KEY AUTO_INCREMENT,
-                                                TypeName ENUM('Nhập kho', 'Điều chỉnh tồn kho', 'Hủy nguyên liệu') NOT NULL UNIQUE
+                                                TypeName ENUM('Stock In', 'Stock Adjustment', 'Ingredient Cancellation') NOT NULL UNIQUE
 ) ENGINE=InnoDB;
 
--- 4. Bảng người dùng (Users)
 CREATE TABLE IF NOT EXISTS Users (
                                      UserID INT PRIMARY KEY AUTO_INCREMENT,
                                      Username VARCHAR(50) UNIQUE NOT NULL,
@@ -29,7 +24,6 @@ CREATE TABLE IF NOT EXISTS Users (
                                      CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- 5. Bảng nhân viên (Employees)
 CREATE TABLE IF NOT EXISTS Employees (
                                          EmployeeID INT PRIMARY KEY AUTO_INCREMENT,
                                          FullName VARCHAR(100) NOT NULL,
@@ -40,7 +34,6 @@ CREATE TABLE IF NOT EXISTS Employees (
                                          HireDate DATE NOT NULL
 ) ENGINE=InnoDB;
 
--- 6. Bảng lí do nghỉ phép (LeaveRecords)
 CREATE TABLE IF NOT EXISTS LeaveRecords (
                                             LeaveID INT PRIMARY KEY AUTO_INCREMENT,
                                             EmployeeID INT NOT NULL,
@@ -50,7 +43,6 @@ CREATE TABLE IF NOT EXISTS LeaveRecords (
                                             FOREIGN KEY (EmployeeID) REFERENCES Employees(EmployeeID)
 ) ENGINE=InnoDB;
 
--- 7. Bảng thực đơn (MenuItems) - cần tham chiếu đến Categories
 CREATE TABLE IF NOT EXISTS MenuItems (
                                          ItemID INT PRIMARY KEY AUTO_INCREMENT,
                                          Name VARCHAR(100) NOT NULL,
@@ -61,7 +53,6 @@ CREATE TABLE IF NOT EXISTS MenuItems (
                                          FOREIGN KEY (CategoryID) REFERENCES Categories(CategoryID) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- 8. Bảng đơn hàng (Orders)
 CREATE TABLE IF NOT EXISTS Orders (
                                       OrderID INT PRIMARY KEY AUTO_INCREMENT,
                                       TotalAmount DECIMAL(10, 2) NOT NULL,
@@ -69,7 +60,6 @@ CREATE TABLE IF NOT EXISTS Orders (
                                       Status ENUM('PENDING', 'COMPLETED', 'CANCELLED', 'PAID') DEFAULT 'PENDING'
 ) ENGINE=InnoDB;
 
--- 9. Bảng chi tiết đơn hàng (OrderDetails) - tham chiếu đến Orders và MenuItems
 CREATE TABLE IF NOT EXISTS OrderDetails (
                                             OrderDetailID INT PRIMARY KEY AUTO_INCREMENT,
                                             OrderID INT NOT NULL,
@@ -80,15 +70,44 @@ CREATE TABLE IF NOT EXISTS OrderDetails (
                                             FOREIGN KEY (ItemID) REFERENCES MenuItems(ItemID) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- 10. Bảng báo cáo doanh thu (RevenueReports)
 CREATE TABLE IF NOT EXISTS RevenueReports (
                                               ReportID INT PRIMARY KEY AUTO_INCREMENT,
-                                              ReportMonth VARCHAR(7) NOT NULL,  -- Ví dụ: '2025-02'
-                                              TotalRevenue DECIMAL(10, 2) NOT NULL,
-                                              TotalQuantity INT NOT NULL
+                                              ReportMonth VARCHAR(7) NOT NULL, -- Định dạng 'YYYY-MM'
+                                              TotalRevenue DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+                                              TotalQuantity INT NOT NULL DEFAULT 0,
+                                              UNIQUE KEY unique_month (ReportMonth) -- Đảm bảo mỗi tháng chỉ có một bản ghi
 ) ENGINE=InnoDB;
 
--- 11. Bảng nguyên liệu (Ingredients) - tham chiếu đến IngredientCategories
+DELIMITER //
+
+CREATE TRIGGER UpdateRevenueAfterOrderComplete
+    AFTER UPDATE ON Orders
+    FOR EACH ROW
+BEGIN
+    DECLARE month_key VARCHAR(7);
+    DECLARE total_amount DECIMAL(10, 2);
+    DECLARE total_quantity INT;
+
+    IF NEW.Status = 'COMPLETED' AND OLD.Status != 'COMPLETED' THEN
+        SET month_key = DATE_FORMAT(NEW.OrderDate, '%Y-%m');
+        SELECT SUM(Quantity) INTO total_quantity
+        FROM OrderDetails
+        WHERE OrderID = NEW.OrderID;
+        SET total_amount = NEW.TotalAmount;
+        IF EXISTS (SELECT 1 FROM RevenueReports WHERE ReportMonth = month_key) THEN
+            UPDATE RevenueReports
+            SET TotalRevenue = TotalRevenue + total_amount,
+                TotalQuantity = TotalQuantity + total_quantity
+            WHERE ReportMonth = month_key;
+        ELSE
+            INSERT INTO RevenueReports (ReportMonth, TotalRevenue, TotalQuantity)
+            VALUES (month_key, total_amount, total_quantity);
+        END IF;
+    END IF;
+END //
+
+DELIMITER ;
+
 CREATE TABLE IF NOT EXISTS Ingredients (
                                            IngredientID INT PRIMARY KEY AUTO_INCREMENT,
                                            Name VARCHAR(255) NOT NULL,
@@ -96,11 +115,10 @@ CREATE TABLE IF NOT EXISTS Ingredients (
                                            Unit VARCHAR(50) NOT NULL,
                                            Stock FLOAT NOT NULL DEFAULT 0,
                                            MinStock FLOAT NOT NULL DEFAULT 0,
-                                           PricePerUnit DECIMAL(10,2) NOT NULL,
+                                           PricePerUnit DECIMAL(10, 2) NOT NULL,
                                            FOREIGN KEY (CategoryID) REFERENCES IngredientCategories(CategoryID) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
--- 12. Bảng giao dịch kho (InventoryTransactions) - tham chiếu đến Ingredients và TransactionTypes
 CREATE TABLE IF NOT EXISTS InventoryTransactions (
                                                      TransactionID INT PRIMARY KEY AUTO_INCREMENT,
                                                      TransactionTypeID INT NOT NULL,
@@ -108,14 +126,13 @@ CREATE TABLE IF NOT EXISTS InventoryTransactions (
                                                      IngredientID INT NOT NULL,
                                                      Quantity FLOAT NOT NULL,
                                                      Unit VARCHAR(50) NOT NULL,
-                                                     Price DECIMAL(10,2),
+                                                     Price DECIMAL(10, 2),
                                                      Note TEXT,
                                                      TransactionDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                                      FOREIGN KEY (IngredientID) REFERENCES Ingredients(IngredientID) ON DELETE CASCADE,
                                                      FOREIGN KEY (TransactionTypeID) REFERENCES TransactionTypes(TransactionTypeID) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- 13. Bảng lưu trữ tồn kho hàng ngày (DailyStock) - tham chiếu đến Ingredients
 CREATE TABLE IF NOT EXISTS DailyStock (
                                           StockID INT PRIMARY KEY AUTO_INCREMENT,
                                           IngredientID INT NOT NULL,
@@ -124,7 +141,7 @@ CREATE TABLE IF NOT EXISTS DailyStock (
                                           Unit VARCHAR(50) NOT NULL,
                                           Stock FLOAT NOT NULL,
                                           MinStock FLOAT NOT NULL,
-                                          PricePerUnit DECIMAL(10,2) NOT NULL,
+                                          PricePerUnit DECIMAL(10, 2) NOT NULL,
                                           Date DATE NOT NULL,
                                           FOREIGN KEY (IngredientID) REFERENCES Ingredients(IngredientID) ON DELETE CASCADE,
                                           UNIQUE (IngredientID, Date)

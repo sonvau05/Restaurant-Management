@@ -6,19 +6,19 @@
          xmlns:fx="http://javafx.com/fxml/1"
          fx:controller="com.restaurantmanagement.app.controller.MainController">
 
-    <Tab text="Kho hàng">
+    <Tab text="Inventory">
         <VBox>
             <fx:include source="warehouse-view.fxml"/>
         </VBox>
     </Tab>
 
-    <Tab text="Đơn hàng">
+    <Tab text="Orders">
         <VBox>
             <fx:include source="inventory-view.fxml"/>
         </VBox>
     </Tab>
 
-    <Tab text="So sánh">
+    <Tab text="Comparison">
         <VBox>
             <fx:include source="log-view.fxml"/>
         </VBox>

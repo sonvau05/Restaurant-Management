@@ -2,7 +2,6 @@ package com.restaurantmanagement.app.controller;
 
 import com.restaurantmanagement.app.entity.RevenueReport;
 import com.restaurantmanagement.app.service.RevenueReportService;
-import com.restaurantmanagement.database.DatabaseConnection;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -10,14 +9,12 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.Button;
-import javafx.event.ActionEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.event.ActionEvent;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
 public class RevenueReportController {
@@ -47,47 +44,43 @@ public class RevenueReportController {
     private Button exitButton;
 
     private final RevenueReportService revenueReportService;
+    private ObservableList<RevenueReport> revenueData;
 
     public RevenueReportController() {
-        // Khởi tạo dịch vụ với kết nối cơ sở dữ liệu
-        Connection connection = DatabaseConnection.getConnection(); // Đảm bảo kết nối được khởi tạo đúng
-        this.revenueReportService = new RevenueReportService(connection);
+        this.revenueReportService = new RevenueReportService();
     }
 
     @FXML
     public void initialize() {
-        // Khởi tạo cột bảng
         reportMonthColumn.setCellValueFactory(new PropertyValueFactory<>("reportMonth"));
         totalRevenueColumn.setCellValueFactory(new PropertyValueFactory<>("totalRevenue"));
         totalQuantityColumn.setCellValueFactory(new PropertyValueFactory<>("totalQuantity"));
 
-        // Lấy dữ liệu và hiển thị lên bảng và biểu đồ
-        try {
-            List<RevenueReport> reports = revenueReportService.getRevenueReports();
-            ObservableList<RevenueReport> data = FXCollections.observableArrayList(reports);
-            revenueTable.setItems(data);
+        refreshData();
+    }
 
-            // Cập nhật biểu đồ cột với doanh thu và số lượng
-            XYChart.Series<String, Number> revenueSeries = new XYChart.Series<>();
-            revenueSeries.setName("Doanh Thu");
-            XYChart.Series<String, Number> quantitySeries = new XYChart.Series<>();
-            quantitySeries.setName("Số Lượng Món Bán");
+    public void refreshData() {
+        List<RevenueReport> reports = revenueReportService.getLast12MonthsRevenueReports();
+        revenueData = FXCollections.observableArrayList(reports);
+        revenueTable.setItems(revenueData);
 
-            for (RevenueReport report : reports) {
-                String month = report.getReportMonth();
-                revenueSeries.getData().add(new XYChart.Data<>(month, report.getTotalRevenue()));
-                quantitySeries.getData().add(new XYChart.Data<>(month, report.getTotalQuantity()));
-            }
+        revenueChart.getData().clear();
+        XYChart.Series<String, Number> revenueSeries = new XYChart.Series<>();
+        revenueSeries.setName("Revenue");
+        XYChart.Series<String, Number> quantitySeries = new XYChart.Series<>();
+        quantitySeries.setName("Items Sold");
 
-            revenueChart.getData().addAll(revenueSeries, quantitySeries);
-        } catch (SQLException e) {
-            e.printStackTrace(); // In ra lỗi nếu có
+        for (RevenueReport report : reports) {
+            String month = report.getReportMonth();
+            revenueSeries.getData().add(new XYChart.Data<>(month, report.getTotalRevenue()));
+            quantitySeries.getData().add(new XYChart.Data<>(month, report.getTotalQuantity()));
         }
+
+        revenueChart.getData().addAll(revenueSeries, quantitySeries);
     }
 
     @FXML
     private void handleExit(ActionEvent event) {
-        // Đóng cửa sổ hoặc quay lại giao diện chính
-        System.exit(0); // Dừng ứng dụng (hoặc có thể thay bằng hành động khác)
+        System.exit(0);
     }
 }

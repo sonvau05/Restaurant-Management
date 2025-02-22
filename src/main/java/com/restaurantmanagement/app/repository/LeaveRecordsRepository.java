@@ -15,15 +15,10 @@ public class LeaveRecordsRepository {
 
     private final Connection connection;
 
-    // Constructor nhận đối tượng Connection
     public LeaveRecordsRepository(Connection connection) {
         this.connection = connection;
     }
 
-    /**
-     * Lưu thông tin nghỉ phép vào bảng LeaveRecords.
-     * Các trường: EmployeeID, StartDate, EndDate, Reason.
-     */
     public boolean saveLeaveRecords(int employeeID, Date startDate, Date endDate, String reason) {
         String query = "INSERT INTO LeaveRecords (EmployeeID, StartDate, EndDate, Reason) VALUES (?, ?, ?, ?)";
         try {
@@ -37,14 +32,11 @@ public class LeaveRecordsRepository {
                 return true;
             }
         } catch (SQLException ex) {
-            System.out.println("Lỗi SQL (saveLeaveRecords): " + ex.getMessage());
+            System.out.println("ERROR SQL (saveLeaveRecords): " + ex.getMessage());
             return false;
         }
     }
 
-    /**
-     * Lấy danh sách tất cả LeaveRecords từ bảng LeaveRecords.
-     */
     public List<LeaveRecords> getAllLeaveRecords() {
         List<LeaveRecords> records = new ArrayList<>();
         String query = "SELECT * FROM LeaveRecords";
@@ -64,14 +56,11 @@ public class LeaveRecordsRepository {
                 }
             }
         } catch (SQLException ex) {
-            System.out.println("Lỗi SQL (getAllLeaveRecords): " + ex.getMessage());
+            System.out.println("ERROR SQL (getAllLeaveRecords): " + ex.getMessage());
         }
         return records;
     }
 
-    /**
-     * Lấy danh sách LeaveRecords theo EmployeeID.
-     */
     public List<LeaveRecords> getLeaveRecordsByEmployeeId(int employeeID) {
         List<LeaveRecords> records = new ArrayList<>();
         String query = "SELECT * FROM LeaveRecords WHERE EmployeeID = ?";
@@ -93,7 +82,7 @@ public class LeaveRecordsRepository {
                 }
             }
         } catch (SQLException ex) {
-            System.out.println("Lỗi SQL (getLeaveRecordsByEmployeeId): " + ex.getMessage());
+            System.out.println("ERROR SQL (getLeaveRecordsByEmployeeId): " + ex.getMessage());
         }
         return records;
     }

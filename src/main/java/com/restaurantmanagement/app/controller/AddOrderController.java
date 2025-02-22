@@ -29,7 +29,7 @@ public class AddOrderController extends Stage {
 
     @FXML
     public void initialize() {
-        // Gán cellValueFactory cho các cột trong TableView
+
         itemIdColumn.setCellValueFactory(new PropertyValueFactory<>("itemID"));
         quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
@@ -85,7 +85,6 @@ public class AddOrderController extends Stage {
         try (Connection connection = DatabaseConnection.getConnection()) {
             connection.setAutoCommit(false);
 
-            // Kiểm tra sự tồn tại của ItemID trong MenuItems trước khi thêm vào OrderDetails
             for (OrderDetail detail : orderDetails) {
                 int itemId = detail.getItemID();
                 String checkItemSql = "SELECT COUNT(*) FROM MenuItems WHERE ItemID = ?";
@@ -96,12 +95,11 @@ public class AddOrderController extends Stage {
                     int count = resultSet.getInt(1);
                     if (count == 0) {
                         showAlert("Item ID " + itemId + " does not exist in MenuItems.");
-                        return; // Dừng việc lưu đơn hàng
+                        return;
                     }
                 }
             }
 
-            // Thêm đơn hàng vào bảng Orders
             String sqlOrder = "INSERT INTO Orders (TotalAmount, Status) VALUES (?, 'PENDING')";
             try (PreparedStatement orderStatement = connection.prepareStatement(sqlOrder, PreparedStatement.RETURN_GENERATED_KEYS)) {
                 BigDecimal totalAmount = new BigDecimal(totalAmountLabel.getText());
@@ -111,7 +109,6 @@ public class AddOrderController extends Stage {
                 var generatedKeys = orderStatement.getGeneratedKeys();
                 int orderId = generatedKeys.next() ? generatedKeys.getInt(1) : 0;
 
-                // Thêm chi tiết đơn hàng vào bảng OrderDetails
                 String sqlDetail = "INSERT INTO OrderDetails (OrderID, ItemID, Quantity, Price) VALUES (?, ?, ?, ?)";
                 try (PreparedStatement detailStatement = connection.prepareStatement(sqlDetail)) {
                     for (OrderDetail detail : orderDetails) {

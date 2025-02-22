@@ -4,7 +4,6 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.restaurantmanagement.app.controller.CategoriesController">
     <VBox spacing="10" AnchorPane.topAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10">
-        <!-- TableView for Categories -->
         <TableView fx:id="categoriesTable">
             <columns>
                 <TableColumn text="Category ID" fx:id="colCategoryID"/>
@@ -12,7 +11,6 @@
             </columns>
         </TableView>
 
-        <!-- Action Buttons -->
         <HBox spacing="10">
             <Button text="Add Category" fx:id="addCategoryButton" onAction="#handleAddCategory"/>
             <Button text="Edit Category" fx:id="editCategoryButton" onAction="#handleEditCategory"/>

@@ -32,7 +32,6 @@ public class IngredientForm {
     public IngredientForm(Ingredient ingredient) {
         this.ingredient = ingredient;
 
-
         loadCategories();
 
         if (ingredient != null) {
@@ -41,10 +40,7 @@ public class IngredientForm {
             stockField.setText(String.valueOf(ingredient.getStock()));
             minStockField.setText(String.valueOf(ingredient.getMinStock()));
             priceField.setText(String.valueOf(ingredient.getPricePerUnit()));
-
-
             categoryBox.setValue(ingredient.getCategory());
-
         }
     }
 
@@ -65,7 +61,7 @@ public class IngredientForm {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            showAlert("Lỗi", "Không thể tải danh mục từ CSDL!");
+            showAlert("Error", "Unable to load categories from the database!");
         }
     }
 
@@ -80,27 +76,27 @@ public class IngredientForm {
     public Optional<Ingredient> showAndWait() {
         Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.APPLICATION_MODAL);
-        dialogStage.setTitle(ingredient == null ? "Thêm nguyên liệu" : "Sửa nguyên liệu");
+        dialogStage.setTitle(ingredient == null ? "Add Ingredient" : "Edit Ingredient");
 
         GridPane grid = new GridPane();
         grid.setPadding(new Insets(10));
         grid.setVgap(8);
         grid.setHgap(10);
 
-        grid.add(new Label("Tên:"), 0, 0);
+        grid.add(new Label("Name:"), 0, 0);
         grid.add(nameField, 1, 0);
-        grid.add(new Label("Đơn vị:"), 0, 1);
+        grid.add(new Label("Unit:"), 0, 1);
         grid.add(unitField, 1, 1);
-        grid.add(new Label("Tồn kho:"), 0, 2);
+        grid.add(new Label("Stock:"), 0, 2);
         grid.add(stockField, 1, 2);
-        grid.add(new Label("Tồn tối thiểu:"), 0, 3);
+        grid.add(new Label("Minimum Stock:"), 0, 3);
         grid.add(minStockField, 1, 3);
-        grid.add(new Label("Giá/Đơn vị:"), 0, 4);
+        grid.add(new Label("Price/Unit:"), 0, 4);
         grid.add(priceField, 1, 4);
-        grid.add(new Label("Danh mục:"), 0, 5);
+        grid.add(new Label("Category:"), 0, 5);
         grid.add(categoryBox, 1, 5);
 
-        Button saveButton = new Button("Lưu");
+        Button saveButton = new Button("Save");
         saveButton.setOnAction(event -> {
             if (validateInput()) {
                 saveIngredient();
@@ -120,7 +116,7 @@ public class IngredientForm {
         if (nameField.getText().isEmpty() || unitField.getText().isEmpty() ||
                 stockField.getText().isEmpty() || minStockField.getText().isEmpty() ||
                 priceField.getText().isEmpty() || categoryBox.getValue() == null) {
-            showAlert("Lỗi nhập liệu", "Vui lòng điền đầy đủ thông tin!");
+            showAlert("Input Error", "Please fill in all the information!");
             return false;
         }
         return true;
@@ -145,14 +141,14 @@ public class IngredientForm {
 
                 int rowsAffected = statement.executeUpdate();
                 if (rowsAffected > 0) {
-                    showAlert("Thành công", "Nguyên liệu đã được thêm!");
+                    showAlert("Success", "Ingredient has been added!");
                 } else {
-                    showAlert("Lỗi", "Không thể thêm nguyên liệu!");
+                    showAlert("Error", "Unable to add ingredient!");
                 }
 
             } catch (SQLException e) {
                 e.printStackTrace();
-                showAlert("Lỗi", "Không thể lưu nguyên liệu!");
+                showAlert("Error", "Unable to save ingredient!");
             }
 
         } else {
@@ -173,7 +169,7 @@ public class IngredientForm {
 
                 int rowsAffected = statement.executeUpdate();
                 if (rowsAffected > 0) {
-                    System.out.println("Cập nhật nguyên liệu thành công!");
+                    System.out.println("Ingredient updated successfully!");
 
                     String checkQuery = "SELECT * FROM Ingredients WHERE IngredientID=?";
                     try (PreparedStatement checkStatement = connection.prepareStatement(checkQuery)) {
@@ -181,7 +177,7 @@ public class IngredientForm {
                         ResultSet resultSet = checkStatement.executeQuery();
 
                         if (resultSet.next()) {
-                            System.out.println("Dữ liệu sau khi cập nhật: ID=" + resultSet.getInt("IngredientID") +
+                            System.out.println("Data after update: ID=" + resultSet.getInt("IngredientID") +
                                     ", Name=" + resultSet.getString("name") +
                                     ", Unit=" + resultSet.getString("unit") +
                                     ", Stock=" + resultSet.getDouble("stock") +
@@ -192,15 +188,12 @@ public class IngredientForm {
                     }
                 }
 
-
             } catch (SQLException e) {
                 e.printStackTrace();
-                showAlert("Lỗi", "Không thể cập nhật nguyên liệu!");
+                showAlert("Error", "Unable to update ingredient!");
             }
         }
     }
-
-
 
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

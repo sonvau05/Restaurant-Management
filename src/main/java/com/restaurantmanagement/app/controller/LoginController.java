@@ -34,19 +34,16 @@ public class LoginController {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
-        // Validate input
         if (username.isEmpty() || password.isEmpty()) {
-            showAlert("Thông báo", "Vui lòng nhập đầy đủ thông tin đăng nhập.", AlertType.WARNING);
+            showAlert("Notification", "Please enter all login information.", AlertType.WARNING);
             return;
         }
 
-        // Validate user credentials
         User user = userService.getUserByUsername(username);
 
         if (user != null && HashingUtils.checkPassword(password, user.getPasswordHash())) {
-            System.out.println("Đăng nhập thành công!");
+            System.out.println("Login successful!");
 
-            // Load Dashboard
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/restaurantmanagement/fxml/Dashboard.fxml"));
                 Parent dashboard = loader.load();
@@ -58,11 +55,11 @@ public class LoginController {
 
             } catch (IOException e) {
                 e.printStackTrace();
-                showAlert("Lỗi", "Không thể mở màn hình Dashboard.", AlertType.ERROR);
+                showAlert("Error", "Unable to open the Dashboard screen.", AlertType.ERROR);
             }
         } else {
-            System.out.println("Thông tin đăng nhập không chính xác!");
-            showAlert("Thông báo", "Tên người dùng hoặc mật khẩu không đúng.", AlertType.ERROR);
+            System.out.println("Incorrect login information!");
+            showAlert("Notification", "Username or password is incorrect.", AlertType.ERROR);
         }
     }
 
@@ -78,14 +75,13 @@ public class LoginController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/restaurantmanagement/fxml/Register.fxml"));
             Parent registerView = loader.load();
-            // Lấy stage hiện tại từ nút đăng nhập (hoặc một thành phần nào đó thuộc scene hiện tại)
             Stage stage = (Stage) usernameField.getScene().getWindow();
             stage.setScene(new Scene(registerView));
-            stage.setTitle("Đăng ký tài khoản");
+            stage.setTitle("Register Account");
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert("Lỗi", "Không thể mở màn hình đăng ký.", Alert.AlertType.ERROR);
+            showAlert("Error", "Unable to open the registration screen.", Alert.AlertType.ERROR);
         }
     }
 }

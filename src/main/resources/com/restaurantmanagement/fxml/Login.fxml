@@ -86,7 +86,6 @@
                                                         <Insets left="210.0" />
                                                     </VBox.margin>
                                                 </Button>
-                                                <!-- Nút Register được thêm vào -->
                                                 <Button onAction="#handleRegister" text="Register"
                                                         prefHeight="36.0" prefWidth="80.0"
                                                         style="-fx-background-color: linear-gradient(to right, #a868a0, #2d75e8); -fx-text-fill: WHITE;">

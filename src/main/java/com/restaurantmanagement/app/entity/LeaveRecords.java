@@ -21,7 +21,6 @@ public class LeaveRecords {
         this.reason = new SimpleStringProperty(reason);
     }
 
-    // Getters và setters thực tế
     public int getLeaveID() {
         return leaveID.get();
     }
@@ -53,7 +52,6 @@ public class LeaveRecords {
         this.reason.set(reason);
     }
 
-    // Các property getters để bind với TableView
     public ObjectProperty<Integer> leaveIDProperty() {
         return leaveID;
     }

@@ -28,7 +28,6 @@ public class InventoryTransaction {
         this.transactionDate = new SimpleStringProperty(transactionDate);
     }
 
-    // Getter and Setter methods
     public int getTransactionID() {
         return transactionID.get();
     }

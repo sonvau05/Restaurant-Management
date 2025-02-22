@@ -1,7 +1,6 @@
 package com.restaurantmanagement.app.repository;
 
 import com.restaurantmanagement.app.entity.Order;
-import com.restaurantmanagement.database.DatabaseConnection;
 
 import java.math.BigDecimal;
 import java.sql.*;
