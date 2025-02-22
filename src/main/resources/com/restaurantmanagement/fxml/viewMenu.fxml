@@ -23,14 +23,6 @@
             </columns>
         </TableView>
 
-        <!-- Action Buttons -->
-        <HBox spacing="10">
-            <Button text="Add" fx:id="addButton" onAction="#handleAdd"/>
-            <Button text="Edit" fx:id="editButton" onAction="#handleEdit"/>
-            <Button text="Delete" fx:id="deleteButton" onAction="#handleDelete"/>
-            <Button text="Categories" fx:id="categoriesButton" onAction="#handleCategories"/>
-        </HBox>
-
         <!-- Category ComboBox (For Add/Edit) -->
         <ComboBox fx:id="categoryComboBox" promptText="Select Category" visible="false"/>
     </VBox>

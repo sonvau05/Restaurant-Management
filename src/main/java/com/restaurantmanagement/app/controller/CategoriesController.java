@@ -28,14 +28,11 @@ public class CategoriesController {
 
     @FXML
     private void initialize() {
-        // Load categories from the database
         loadCategories();
     }
 
     private void loadCategories() {
         List<Category> categoryList = categoryService.getAllCategories();
-
-        // Sắp xếp danh sách categories theo categoryID
         categoryList.sort(Comparator.comparingInt(Category::getCategoryID));
 
         colCategoryID.setCellValueFactory(cellData -> cellData.getValue().categoryIDProperty().asObject());
@@ -51,9 +48,9 @@ public class CategoriesController {
         dialog.setHeaderText("Enter the category name:");
 
         dialog.showAndWait().ifPresent(categoryName -> {
-            Category newCategory = new Category(0, categoryName); // ID will be generated automatically
+            Category newCategory = new Category(0, categoryName);
             categoryService.addCategory(newCategory);
-            loadCategories(); // Reload category list after adding
+            loadCategories();
         });
     }
 
@@ -87,7 +84,7 @@ public class CategoriesController {
             confirmation.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
                     categoryService.deleteCategory(selectedCategory.getCategoryID());
-                    loadCategories(); // Reload category list after deleting
+                    loadCategories();
                 }
             });
         } else {
@@ -106,11 +103,9 @@ public class CategoriesController {
     @FXML
     private void handleBack(ActionEvent event) {
         try {
-            // Trở lại màn hình menu quản lý
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/restaurantmanagement/fxml/manager_menu.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/restaurantmanagement/fxml/menu.fxml"));
             AnchorPane managerMenu = loader.load();
 
-            // Chuyển cảnh
             Scene currentScene = backButton.getScene();
             currentScene.setRoot(managerMenu);
         } catch (IOException e) {

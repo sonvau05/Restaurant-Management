@@ -20,10 +20,14 @@ import java.io.IOException;
 
 public class RegisterController {
 
-    @FXML private TextField usernameField;
-    @FXML private PasswordField passwordField;
-    @FXML private PasswordField confirmPasswordField;
-    @FXML private ComboBox<String> roleComboBox;
+    @FXML
+    private TextField usernameField;
+    @FXML
+    private PasswordField passwordField;
+    @FXML
+    private PasswordField confirmPasswordField;
+    @FXML
+    private ComboBox<String> roleComboBox;
 
     private UserService userService;
     private UserRepository userRepository;
@@ -40,36 +44,38 @@ public class RegisterController {
         String confirmPassword = confirmPasswordField.getText();
         String roleString = roleComboBox.getValue();
 
-        // Kiểm tra nếu các trường không được nhập đầy đủ
         if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || roleString == null) {
             showAlert("Thông báo", "Vui lòng nhập đầy đủ thông tin.", AlertType.WARNING);
             return;
         }
 
-        // Kiểm tra nếu mật khẩu và xác nhận mật khẩu không khớp
         if (!password.equals(confirmPassword)) {
             showAlert("Thông báo", "Mật khẩu không khớp.", AlertType.WARNING);
             return;
         }
 
-        // Kiểm tra xem tài khoản đã tồn tại chưa
         if (userService.getUserByUsername(username) != null) {
             showAlert("Thông báo", "Tài khoản đã tồn tại.", AlertType.WARNING);
             return;
         }
 
-        // Mã hóa mật khẩu
         String passwordHash = HashingUtils.hashPasswordWithSalt(password);
-
-        // Lưu người dùng vào cơ sở dữ liệu
         Role role = Role.valueOf(roleString.toUpperCase());
         User newUser = new User(0, username, passwordHash, role, null);
         userRepository.saveUser(newUser);
 
-        // Hiển thị thông báo thành công
         showAlert("Thông báo", "Đăng ký thành công!", AlertType.INFORMATION);
 
-        // Quay lại màn hình đăng nhập
+        // Chuyển sang màn hình đăng nhập trong cùng tab
+        navigateToLogin();
+    }
+
+    @FXML
+    private void handleBack() {
+        navigateToLogin();
+    }
+
+    private void navigateToLogin() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/restaurantmanagement/fxml/Login.fxml"));
             Parent loginView = loader.load();

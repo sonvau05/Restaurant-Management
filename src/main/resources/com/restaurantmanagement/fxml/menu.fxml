@@ -1,19 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.collections.FXCollections?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.restaurantmanagement.app.controller.CashierMenuController">
-    <children>
-        <TextField fx:id="searchField" layoutX="20" layoutY="20" promptText="Tìm món ăn" onKeyReleased="#handleSearch" />
+<?import javafx.scene.control.TableColumn?>
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.restaurantmanagement.app.controller.ManagerMenuController">
+    <VBox spacing="10" AnchorPane.topAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10">
+        <!-- Search Section -->
+        <HBox spacing="10">
+            <TextField promptText="Search Menu Item..." fx:id="searchField"/>
+            <Button text="Search" fx:id="searchButton" onAction="#handleSearch"/>
+        </HBox>
 
-        <TableView fx:id="menuItemsTable" layoutX="20" layoutY="60" prefHeight="400" prefWidth="550">
+        <!-- TableView -->
+        <TableView fx:id="menuItemsTable">
             <columns>
-                <TableColumn fx:id="colId" text="ID" prefWidth="50" />
-                <TableColumn fx:id="colName" text="Tên Món" prefWidth="150" />
-                <TableColumn fx:id="colCategory" text="Danh Mục" prefWidth="100" />
-                <TableColumn fx:id="colDescription" text="Mô Tả" prefWidth="200" />
-                <TableColumn fx:id="colPrice" text="Giá" prefWidth="100" />
+                <TableColumn text="ID" fx:id="colId" />
+                <TableColumn text="Name" fx:id="colName"/>
+                <TableColumn text="Category" fx:id="colCategory"/>
+                <TableColumn text="Description" fx:id="colDescription"/>
+                <TableColumn text="Price" fx:id="colPrice"/>
             </columns>
         </TableView>
-    </children>
+
+        <!-- Action Buttons -->
+        <HBox spacing="10">
+            <Button text="Add" fx:id="addButton" onAction="#handleAdd"/>
+            <Button text="Edit" fx:id="editButton" onAction="#handleEdit"/>
+            <Button text="Delete" fx:id="deleteButton" onAction="#handleDelete"/>
+            <Button text="Categories" fx:id="categoriesButton" onAction="#handleCategories"/>
+        </HBox>
+
+        <!-- Category ComboBox (For Add/Edit) -->
+        <ComboBox fx:id="categoryComboBox" promptText="Select Category" visible="false"/>
+    </VBox>
 </AnchorPane>

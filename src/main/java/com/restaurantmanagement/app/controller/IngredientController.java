@@ -155,7 +155,13 @@ public class IngredientController {
 
         result.ifPresent(updated -> {
             int index = ingredientList.indexOf(ingredient);
-            ingredientList.set(index, updated);
+            ingredientList.set(index, updated); // Cập nhật nguyên liệu trong danh sách
+
+            loadAllIngredients(); // Load lại toàn bộ danh sách để làm mới bảng
+
+            if (ingredientTable != null) {
+                ingredientTable.refresh(); // Refresh thủ công bảng nếu ingredientTable tồn tại
+            }
 
             // Cập nhật database
             String sql = "UPDATE Ingredients SET Name = ?, Unit = ?, Stock = ?, MinStock = ?, PricePerUnit = ?, CategoryID = " +
@@ -174,12 +180,9 @@ public class IngredientController {
                 e.printStackTrace();
             }
         });
-        result.ifPresent(updated -> {
-            int index = ingredientList.indexOf(ingredient);
-            ingredientList.set(index, updated);
-            loadAllIngredients();
-        });
     }
+
+
 
     // Xóa nguyên liệu
     @FXML
@@ -316,10 +319,6 @@ public class IngredientController {
             showAlert("Lỗi khi lưu tồn kho: " + e.getMessage());
         }
     }
-
-
-
-
 
     // Hiển thị thông báo
     private void showAlert(String message) {
