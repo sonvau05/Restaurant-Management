@@ -2,7 +2,6 @@ package com.restaurantmanagement.app.controller;
 
 import com.restaurantmanagement.app.entity.User;
 import com.restaurantmanagement.app.entity.Role;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -158,22 +157,6 @@ public class DashboardController {
     @FXML
     private void handleReport() {
         loadView("report.fxml");
-    }
-
-    public void setRoleImage(String role) {
-        String imagePath = switch (role) {
-            case "Manager" -> "/images/manager.png";
-            case "Chef" -> "/images/chef.png";
-            case "Cashier" -> "/images/cashier.png";
-            default -> "/images/default.png";
-        };
-
-        try {
-            Image image = new Image(getClass().getResourceAsStream(imagePath));
-            roleImageView.setImage(image);
-        } catch (Exception e) {
-            System.out.println("Error loading role image: " + e.getMessage());
-        }
     }
 
     @FXML

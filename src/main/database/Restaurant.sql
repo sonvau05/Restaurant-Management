@@ -72,41 +72,11 @@ CREATE TABLE IF NOT EXISTS OrderDetails (
 
 CREATE TABLE IF NOT EXISTS RevenueReports (
                                               ReportID INT PRIMARY KEY AUTO_INCREMENT,
-                                              ReportMonth VARCHAR(7) NOT NULL, -- Định dạng 'YYYY-MM'
+                                              ReportMonth VARCHAR(7) NOT NULL,
                                               TotalRevenue DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
                                               TotalQuantity INT NOT NULL DEFAULT 0,
-                                              UNIQUE KEY unique_month (ReportMonth) -- Đảm bảo mỗi tháng chỉ có một bản ghi
+                                              UNIQUE KEY unique_month (ReportMonth)
 ) ENGINE=InnoDB;
-
-DELIMITER //
-
-CREATE TRIGGER UpdateRevenueAfterOrderComplete
-    AFTER UPDATE ON Orders
-    FOR EACH ROW
-BEGIN
-    DECLARE month_key VARCHAR(7);
-    DECLARE total_amount DECIMAL(10, 2);
-    DECLARE total_quantity INT;
-
-    IF NEW.Status = 'COMPLETED' AND OLD.Status != 'COMPLETED' THEN
-        SET month_key = DATE_FORMAT(NEW.OrderDate, '%Y-%m');
-        SELECT SUM(Quantity) INTO total_quantity
-        FROM OrderDetails
-        WHERE OrderID = NEW.OrderID;
-        SET total_amount = NEW.TotalAmount;
-        IF EXISTS (SELECT 1 FROM RevenueReports WHERE ReportMonth = month_key) THEN
-            UPDATE RevenueReports
-            SET TotalRevenue = TotalRevenue + total_amount,
-                TotalQuantity = TotalQuantity + total_quantity
-            WHERE ReportMonth = month_key;
-        ELSE
-            INSERT INTO RevenueReports (ReportMonth, TotalRevenue, TotalQuantity)
-            VALUES (month_key, total_amount, total_quantity);
-        END IF;
-    END IF;
-END //
-
-DELIMITER ;
 
 CREATE TABLE IF NOT EXISTS Ingredients (
                                            IngredientID INT PRIMARY KEY AUTO_INCREMENT,
@@ -146,4 +116,34 @@ CREATE TABLE IF NOT EXISTS DailyStock (
                                           FOREIGN KEY (IngredientID) REFERENCES Ingredients(IngredientID) ON DELETE CASCADE,
                                           UNIQUE (IngredientID, Date)
 ) ENGINE=InnoDB;
+
+DELIMITER //
+
+CREATE TRIGGER UpdateRevenueAfterOrderComplete
+    AFTER UPDATE ON Orders
+    FOR EACH ROW
+BEGIN
+    DECLARE month_key VARCHAR(7);
+    DECLARE total_amount DECIMAL(10, 2);
+    DECLARE total_quantity INT;
+
+    IF NEW.Status = 'COMPLETED' AND OLD.Status != 'COMPLETED' THEN
+        SET month_key = DATE_FORMAT(NEW.OrderDate, '%Y-%m');
+        SELECT SUM(Quantity) INTO total_quantity
+        FROM OrderDetails
+        WHERE OrderID = NEW.OrderID;
+        SET total_amount = NEW.TotalAmount;
+        IF EXISTS (SELECT 1 FROM RevenueReports WHERE ReportMonth = month_key) THEN
+            UPDATE RevenueReports
+            SET TotalRevenue = TotalRevenue + total_amount,
+                TotalQuantity = TotalQuantity + total_quantity
+            WHERE ReportMonth = month_key;
+        ELSE
+            INSERT INTO RevenueReports (ReportMonth, TotalRevenue, TotalQuantity)
+            VALUES (month_key, total_amount, total_quantity);
+        END IF;
+    END IF;
+END //
+
+DELIMITER ;
 

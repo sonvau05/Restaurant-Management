@@ -16,26 +16,13 @@ import java.util.List;
 
 public class ViewOrdersController {
 
-    @FXML
-    private TableView<Order> ordersTableView;
-
-    @FXML
-    private TableColumn<Order, Integer> orderIdColumn;
-
-    @FXML
-    private TableColumn<Order, BigDecimal> totalAmountColumn;
-
-    @FXML
-    private TableColumn<Order, Timestamp> orderDateColumn;
-
-    @FXML
-    private TableColumn<Order, String> statusColumn;
-
-    @FXML
-    private TextField orderIdField;
-
-    @FXML
-    private ComboBox<String> statusComboBox;
+    @FXML private TableView<Order> ordersTableView;
+    @FXML private TableColumn<Order, Integer> orderIdColumn;
+    @FXML private TableColumn<Order, BigDecimal> totalAmountColumn;
+    @FXML private TableColumn<Order, Timestamp> orderDateColumn;
+    @FXML private TableColumn<Order, String> statusColumn;
+    @FXML private TextField orderIdField;
+    @FXML private ComboBox<String> statusComboBox;
 
     private OrderViewService orderViewService;
 
@@ -44,14 +31,10 @@ public class ViewOrdersController {
         Connection connection = DatabaseConnection.getConnection();
         orderViewService = new OrderViewService(connection);
 
-        orderIdColumn.setCellValueFactory(cellData
-                -> cellData.getValue().orderIDProperty().asObject());
-        totalAmountColumn.setCellValueFactory(cellData
-                -> cellData.getValue().totalAmountProperty());
-        orderDateColumn.setCellValueFactory(cellData
-                -> cellData.getValue().orderDateProperty());
-        statusColumn.setCellValueFactory(cellData
-                -> cellData.getValue().statusProperty());
+        orderIdColumn.setCellValueFactory(cellData -> cellData.getValue().orderIDProperty().asObject());
+        totalAmountColumn.setCellValueFactory(cellData -> cellData.getValue().totalAmountProperty());
+        orderDateColumn.setCellValueFactory(cellData -> cellData.getValue().orderDateProperty());
+        statusColumn.setCellValueFactory(cellData -> cellData.getValue().statusProperty());
 
         loadOrders();
     }
@@ -80,6 +63,46 @@ public class ViewOrdersController {
             } else {
                 showAlert("Failed to update order status.");
             }
+        } catch (NumberFormatException e) {
+            showAlert("Invalid Order ID. Please enter a valid number.");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @FXML
+    public void handleDelete() {
+        String selectedOrderId = orderIdField.getText();
+
+        if (selectedOrderId.isEmpty()) {
+            showAlert("Please provide an Order ID to delete.");
+            return;
+        }
+
+        try {
+            int orderId = Integer.parseInt(selectedOrderId);
+
+            // Xác nhận trước khi xóa
+            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmation.setTitle("Confirm Deletion");
+            confirmation.setHeaderText("Are you sure you want to delete this order?");
+            confirmation.setContentText("Order ID: " + orderId);
+            confirmation.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
+                    try {
+                        boolean deleted = orderViewService.deleteOrder(orderId);
+                        if (deleted) {
+                            showAlert("Order deleted successfully!");
+                            loadOrders();
+                        } else {
+                            showAlert("Failed to delete order. Order ID may not exist.");
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        showAlert("Error deleting order: " + e.getMessage());
+                    }
+                }
+            });
         } catch (NumberFormatException e) {
             showAlert("Invalid Order ID. Please enter a valid number.");
         }

@@ -1,7 +1,7 @@
 package com.restaurantmanagement.app.repository;
 
 import com.restaurantmanagement.app.entity.MenuItems;
-import com.restaurantmanagement.app.entity.Category;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -120,24 +120,4 @@ public class MenuRepository {
         return success;
     }
 
-    public List<Category> getAllCategories() {
-        List<Category> categories = new ArrayList<>();
-        String query = "SELECT CategoryID, Name FROM Categories";
-
-        try (Connection connection = getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(query)) {
-
-            while (resultSet.next()) {
-                int id = resultSet.getInt("CategoryID");
-                String name = resultSet.getString("Name");
-
-                Category category = new Category(id, name);
-                categories.add(category);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return categories;
-    }
 }

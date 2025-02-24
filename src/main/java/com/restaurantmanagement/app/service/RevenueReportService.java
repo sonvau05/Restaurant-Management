@@ -22,25 +22,8 @@ public class RevenueReportService {
             return revenueReportRepository.getLast12MonthsRevenueReports();
         } catch (SQLException e) {
             e.printStackTrace();
-            return List.of(); // Trả về danh sách rỗng nếu có lỗi
+            return List.of();
         }
     }
 
-    public List<RevenueReport> getAllRevenueReports() {
-        return revenueReportRepository.getRevenueReports();
-    }
-
-    public double getTotalRevenueLast12Months() {
-        List<RevenueReport> reports = getLast12MonthsRevenueReports();
-        return reports.stream()
-                .mapToDouble(RevenueReport::getTotalRevenue)
-                .sum();
-    }
-
-    public int getTotalQuantityLast12Months() {
-        List<RevenueReport> reports = getLast12MonthsRevenueReports();
-        return reports.stream()
-                .mapToInt(RevenueReport::getTotalQuantity)
-                .sum();
-    }
 }

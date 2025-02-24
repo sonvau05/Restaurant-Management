@@ -1,7 +1,6 @@
 package com.restaurantmanagement.app.repository;
 
 import com.restaurantmanagement.app.entity.LeaveRecords;
-import com.restaurantmanagement.database.DatabaseConnection;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -35,30 +34,6 @@ public class LeaveRecordsRepository {
             System.out.println("ERROR SQL (saveLeaveRecords): " + ex.getMessage());
             return false;
         }
-    }
-
-    public List<LeaveRecords> getAllLeaveRecords() {
-        List<LeaveRecords> records = new ArrayList<>();
-        String query = "SELECT * FROM LeaveRecords";
-        try {
-            if (connection == null) return records;
-            try (PreparedStatement pstmt = connection.prepareStatement(query);
-                 ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    LeaveRecords record = new LeaveRecords(
-                            rs.getInt("LeaveID"),
-                            rs.getInt("EmployeeID"),
-                            rs.getDate("StartDate"),
-                            rs.getDate("EndDate"),
-                            rs.getString("Reason")
-                    );
-                    records.add(record);
-                }
-            }
-        } catch (SQLException ex) {
-            System.out.println("ERROR SQL (getAllLeaveRecords): " + ex.getMessage());
-        }
-        return records;
     }
 
     public List<LeaveRecords> getLeaveRecordsByEmployeeId(int employeeID) {

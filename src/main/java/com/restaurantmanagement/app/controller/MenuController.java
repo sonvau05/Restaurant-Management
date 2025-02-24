@@ -11,13 +11,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
 import java.util.Optional;
 
 import static com.restaurantmanagement.app.utils.AlertUtils.showAlert;
 
-public class ManagerMenuController {
+public class MenuController {
 
     @FXML
     private TextField searchField;
@@ -220,15 +221,15 @@ public class ManagerMenuController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/restaurantmanagement/fxml/categories.fxml"));
             AnchorPane categoriesPane = loader.load();
-            Scene currentScene = categoriesButton.getScene();
-            currentScene.setRoot(categoriesPane);
+            StackPane contentArea = (StackPane) categoriesButton.getScene().lookup("#contentArea");
+            if (contentArea != null) {
+                contentArea.getChildren().setAll(categoriesPane);
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Error", "Không tìm thấy contentArea trong Dashboard!");
+            }
         } catch (IOException e) {
             e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Unable to load categories");
-            alert.setContentText("An error occurred while switching to categories.");
-            alert.showAndWait();
+            showAlert(Alert.AlertType.ERROR, "Error", "Không thể tải categories: " + e.getMessage());
         }
     }
 }

@@ -36,24 +36,4 @@ public class RevenueReportRepository {
         return reports;
     }
 
-    public List<RevenueReport> getRevenueReports() {
-        List<RevenueReport> reports = new ArrayList<>();
-        String sql = "SELECT ReportMonth, TotalRevenue, TotalQuantity " +
-                "FROM RevenueReports " +
-                "ORDER BY ReportMonth ASC";
-
-        try (PreparedStatement statement = connection.prepareStatement(sql);
-             ResultSet resultSet = statement.executeQuery()) {
-            while (resultSet.next()) {
-                RevenueReport report = new RevenueReport();
-                report.setReportMonth(resultSet.getString("ReportMonth"));
-                report.setTotalRevenue(resultSet.getDouble("TotalRevenue"));
-                report.setTotalQuantity(resultSet.getInt("TotalQuantity"));
-                reports.add(report);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return reports;
-    }
 }

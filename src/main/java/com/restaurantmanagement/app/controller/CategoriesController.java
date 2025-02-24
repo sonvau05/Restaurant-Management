@@ -8,6 +8,8 @@ import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Comparator;
@@ -106,17 +108,16 @@ public class CategoriesController {
     private void handleBack(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/restaurantmanagement/fxml/menu.fxml"));
-            AnchorPane managerMenu = loader.load();
-
-            Scene currentScene = backButton.getScene();
-            currentScene.setRoot(managerMenu);
+            AnchorPane menuPane = loader.load();
+            StackPane contentArea = (StackPane) backButton.getScene().lookup("#contentArea");
+            if (contentArea != null) {
+                contentArea.getChildren().setAll(menuPane);
+            } else {
+                showAlert("Error", "Không tìm thấy contentArea trong Dashboard!");
+            }
         } catch (IOException e) {
             e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Failed to load Manager Menu");
-            alert.setContentText("An error occurred while navigating back.");
-            alert.showAndWait();
+            showAlert("Error", "Không thể tải menu: " + e.getMessage());
         }
     }
 }
