@@ -1,6 +1,6 @@
 package com.restaurantmanagement.app.controller;
 
-import com.restaurantmanagement.app.entity.MenuItems;
+import com.restaurantmanagement.app.entity.MenuItem;
 import com.restaurantmanagement.app.entity.Category;
 import com.restaurantmanagement.app.service.MenuService;
 import javafx.collections.FXCollections;
@@ -8,61 +8,53 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
-import static com.restaurantmanagement.app.utils.AlertUtils.showAlert;
-
 public class MenuController {
+    @FXML private TextField searchField;
+    @FXML private Button categoriesButton;
+    @FXML private TableView<MenuItem> menuItemsTable;
+    @FXML private TableColumn<MenuItem, Integer> colId;
+    @FXML private TableColumn<MenuItem, String> colName;
+    @FXML private TableColumn<MenuItem, String> colCategory;
+    @FXML private TableColumn<MenuItem, String> colDescription;
+    @FXML private TableColumn<MenuItem, Double> colPrice;
 
-    @FXML
-    private TextField searchField;
-    @FXML
-    private Button categoriesButton;
-    @FXML
-    private TableView<MenuItems> menuItemsTable;
-    @FXML
-    private TableColumn<MenuItems, Integer> colId;
-    @FXML
-    private TableColumn<MenuItems, String> colName;
-    @FXML
-    private TableColumn<MenuItems, String> colCategory;
-    @FXML
-    private TableColumn<MenuItems, String> colDescription;
-    @FXML
-    private TableColumn<MenuItems, Double> colPrice;
-
-    private MenuService managerMenuService = new MenuService();
-    private ObservableList<MenuItems> menuItemsList = FXCollections.observableArrayList();
+    private final MenuService menuService = new MenuService();
+    private ObservableList<MenuItem> menuItemsList = FXCollections.observableArrayList();
     private ObservableList<Category> categoriesList = FXCollections.observableArrayList();
 
     @FXML
     private void initialize() {
-        colId.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
-        colName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
-        colCategory.setCellValueFactory(cellData -> cellData.getValue().categoryProperty());
-        colDescription.setCellValueFactory(cellData -> cellData.getValue().descriptionProperty());
-        colPrice.setCellValueFactory(cellData -> cellData.getValue().priceProperty().asObject());
-
+        colId.setCellValueFactory(cellData -> new javafx.beans.property.SimpleIntegerProperty(cellData.getValue().getItemID()).asObject());
+        colName.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getName()));
+        colCategory.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(getCategoryName(cellData.getValue().getCategoryID())));
+        colDescription.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getDescription()));
+        colPrice.setCellValueFactory(cellData -> new javafx.beans.property.SimpleDoubleProperty(cellData.getValue().getPrice().doubleValue()).asObject());
         loadMenuItems();
-        categoriesList.setAll(managerMenuService.getAllCategories());
+        loadCategories();
     }
 
     private void loadMenuItems() {
-        menuItemsList.setAll(managerMenuService.getAllMenuItems());
+        menuItemsList.setAll(menuService.getAllMenuItems());
         menuItemsTable.setItems(menuItemsList);
+    }
+
+    private void loadCategories() {
+        categoriesList.setAll(menuService.getAllCategories());
     }
 
     @FXML
     private void handleSearch(ActionEvent event) {
         String searchQuery = searchField.getText();
         if (!searchQuery.isEmpty()) {
-            menuItemsList.setAll(managerMenuService.searchMenuItems(searchQuery));
+            menuItemsList.setAll(menuService.searchMenuItems(searchQuery));
         } else {
             loadMenuItems();
         }
@@ -70,59 +62,43 @@ public class MenuController {
 
     @FXML
     private void handleAdd(ActionEvent event) {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Add New Menu Item");
-        dialog.setHeaderText("Enter the name and price of the new menu item");
-        dialog.setContentText("Menu item name:");
-
-        Optional<String> result = dialog.showAndWait();
-        if (result.isPresent()) {
-            String itemName = result.get();
-
+        TextInputDialog nameDialog = new TextInputDialog();
+        nameDialog.setTitle("Add New Menu Item");
+        nameDialog.setHeaderText("Enter the name of the new menu item");
+        nameDialog.setContentText("Menu item name:");
+        Optional<String> nameResult = nameDialog.showAndWait();
+        if (nameResult.isPresent()) {
+            String itemName = nameResult.get();
             TextInputDialog priceDialog = new TextInputDialog();
             priceDialog.setTitle("Add Menu Item Price");
             priceDialog.setHeaderText("Enter the price of the menu item");
             priceDialog.setContentText("Price:");
-
             Optional<String> priceResult = priceDialog.showAndWait();
             if (priceResult.isPresent()) {
                 String priceString = priceResult.get();
                 double price;
-
                 try {
                     price = Double.parseDouble(priceString);
                 } catch (NumberFormatException e) {
                     showAlert(Alert.AlertType.ERROR, "Price Error", "Invalid price. Please enter a number.");
                     return;
                 }
-
                 TextInputDialog descriptionDialog = new TextInputDialog();
                 descriptionDialog.setTitle("Add Menu Item Description");
                 descriptionDialog.setHeaderText("Enter the description of the menu item");
                 descriptionDialog.setContentText("Description:");
-
                 Optional<String> descriptionResult = descriptionDialog.showAndWait();
                 if (descriptionResult.isPresent()) {
                     String description = descriptionResult.get();
-
                     ChoiceDialog<Category> categoryDialog = new ChoiceDialog<>(null, categoriesList);
                     categoryDialog.setTitle("Select Menu Item Category");
                     categoryDialog.setHeaderText("Select Menu Item Category");
                     categoryDialog.setContentText("Category:");
-
-                    categoryDialog.setResultConverter(dialogButton -> {
-                        if (dialogButton == ButtonType.OK) {
-                            return categoryDialog.getSelectedItem();
-                        }
-                        return null;
-                    });
-
                     Optional<Category> categoryResult = categoryDialog.showAndWait();
                     if (categoryResult.isPresent()) {
                         Category selectedCategory = categoryResult.get();
                         int categoryId = selectedCategory.getCategoryID();
-
-                        managerMenuService.addMenuItem(itemName, price, description, categoryId);
+                        menuService.addMenuItem(itemName, price, description, categoryId);
                         loadMenuItems();
                     }
                 }
@@ -132,61 +108,45 @@ public class MenuController {
 
     @FXML
     private void handleEdit(ActionEvent event) {
-        MenuItems selectedItem = menuItemsTable.getSelectionModel().getSelectedItem();
+        MenuItem selectedItem = menuItemsTable.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
             TextInputDialog nameDialog = new TextInputDialog(selectedItem.getName());
             nameDialog.setTitle("Edit Menu Item");
             nameDialog.setHeaderText("Enter the new name");
             nameDialog.setContentText("Menu item name:");
-
             Optional<String> nameResult = nameDialog.showAndWait();
             if (nameResult.isPresent()) {
                 String newName = nameResult.get();
-
                 TextInputDialog priceDialog = new TextInputDialog(String.valueOf(selectedItem.getPrice()));
                 priceDialog.setTitle("Edit Menu Item Price");
                 priceDialog.setHeaderText("Enter the new price");
                 priceDialog.setContentText("Price:");
-
                 Optional<String> priceResult = priceDialog.showAndWait();
                 if (priceResult.isPresent()) {
                     String priceString = priceResult.get();
                     double newPrice;
-
                     try {
                         newPrice = Double.parseDouble(priceString);
                     } catch (NumberFormatException e) {
                         showAlert(Alert.AlertType.ERROR, "Price Error", "Invalid price. Please enter a number.");
                         return;
                     }
-
                     TextInputDialog descriptionDialog = new TextInputDialog(selectedItem.getDescription());
                     descriptionDialog.setTitle("Edit Menu Item Description");
                     descriptionDialog.setHeaderText("Enter the new description");
                     descriptionDialog.setContentText("Description:");
-
                     Optional<String> descriptionResult = descriptionDialog.showAndWait();
                     if (descriptionResult.isPresent()) {
                         String newDescription = descriptionResult.get();
-
                         ChoiceDialog<Category> categoryDialog = new ChoiceDialog<>(null, categoriesList);
                         categoryDialog.setTitle("Select Menu Item Category");
                         categoryDialog.setHeaderText("Select Menu Item Category");
                         categoryDialog.setContentText("Category:");
-
-                        categoryDialog.setResultConverter(dialogButton -> {
-                            if (dialogButton == ButtonType.OK) {
-                                return categoryDialog.getSelectedItem();
-                            }
-                            return null;
-                        });
-
                         Optional<Category> categoryResult = categoryDialog.showAndWait();
                         if (categoryResult.isPresent()) {
                             Category selectedCategory = categoryResult.get();
                             int categoryId = selectedCategory.getCategoryID();
-
-                            managerMenuService.updateMenuItem(selectedItem.getId(), newName, newPrice, newDescription, categoryId);
+                            menuService.updateMenuItem(selectedItem.getItemID(), newName, newPrice, newDescription, categoryId);
                             loadMenuItems();
                         }
                     }
@@ -199,16 +159,15 @@ public class MenuController {
 
     @FXML
     private void handleDelete(ActionEvent event) {
-        MenuItems selectedItem = menuItemsTable.getSelectionModel().getSelectedItem();
+        MenuItem selectedItem = menuItemsTable.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
             Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
             confirmationAlert.setTitle("Confirm Deletion");
             confirmationAlert.setHeaderText("Are you sure you want to delete this menu item?");
             confirmationAlert.setContentText("Menu Item: " + selectedItem.getName());
-
             Optional<ButtonType> result = confirmationAlert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                managerMenuService.deleteMenuItems(selectedItem.getId());
+                menuService.deleteMenuItem(selectedItem.getItemID());
                 loadMenuItems();
             }
         } else {
@@ -231,5 +190,23 @@ public class MenuController {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Error", "Không thể tải categories: " + e.getMessage());
         }
+    }
+
+    private String getCategoryName(int categoryId) {
+        List<Category> categories = menuService.getAllCategories();
+        for (Category category : categories) {
+            if (category.getCategoryID() == categoryId) {
+                return category.getName();
+            }
+        }
+        return "Unknown";
+    }
+
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

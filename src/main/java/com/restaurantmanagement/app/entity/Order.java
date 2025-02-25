@@ -1,59 +1,35 @@
 package com.restaurantmanagement.app.entity;
 
-import javafx.beans.property.*;
-import java.sql.Timestamp;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.List;
 
 public class Order {
-    private final IntegerProperty orderID;
-    private final ObjectProperty<BigDecimal> totalAmount;
-    private final ObjectProperty<Timestamp> orderDate;
-    private final StringProperty status;
+    private int orderID;
+    private BigDecimal totalAmount;
+    private Timestamp orderDate;
+    private String status;
+    private List<OrderDetail> orderDetails;
 
-    public Order(int orderID, BigDecimal totalAmount, Timestamp orderDate, String status) {
-        this.orderID = new SimpleIntegerProperty(orderID);
-        this.totalAmount = new SimpleObjectProperty<>(totalAmount);
-        this.orderDate = new SimpleObjectProperty<>(orderDate);
-        this.status = new SimpleStringProperty(status);
-    }
-
-    public int getOrderID() {
-        return orderID.get();
-    }
-    public void setOrderID(int orderID) {
-        this.orderID.set(orderID);
-    }
-    public IntegerProperty orderIDProperty() {
-        return orderID;
+    public Order(int orderID, BigDecimal totalAmount, Timestamp orderDate, String status, List<OrderDetail> orderDetails) {
+        this.orderID = orderID;
+        this.totalAmount = totalAmount;
+        this.orderDate = orderDate;
+        this.status = status;
+        this.orderDetails = orderDetails;
     }
 
-    public BigDecimal getTotalAmount() {
-        return totalAmount.get();
-    }
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount.set(totalAmount);
-    }
-    public ObjectProperty<BigDecimal> totalAmountProperty() {
-        return totalAmount;
-    }
+    public int getOrderID() { return orderID; }
+    public BigDecimal getTotalAmount() { return totalAmount; }
+    public Timestamp getOrderDate() { return orderDate; }
+    public String getStatus() { return status; }
+    public List<OrderDetail> getOrderDetails() { return orderDetails; }
 
-    public Timestamp getOrderDate() {
-        return orderDate.get();
-    }
-    public void setOrderDate(Timestamp orderDate) {
-        this.orderDate.set(orderDate);
-    }
-    public ObjectProperty<Timestamp> orderDateProperty() {
-        return orderDate;
-    }
-
-    public String getStatus() {
-        return status.get();
-    }
-    public void setStatus(String status) {
-        this.status.set(status);
-    }
-    public StringProperty statusProperty() {
-        return status;
+    public String getItemsString() {
+        StringBuilder items = new StringBuilder();
+        for (OrderDetail detail : orderDetails) {
+            items.append(detail.getItemName()).append(" (").append(detail.getCategoryName()).append(") x").append(detail.getQuantity()).append(", ");
+        }
+        return items.length() > 0 ? items.substring(0, items.length() - 2) : "";
     }
 }

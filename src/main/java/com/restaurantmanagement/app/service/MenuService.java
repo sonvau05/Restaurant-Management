@@ -1,43 +1,54 @@
 package com.restaurantmanagement.app.service;
 
 import com.restaurantmanagement.app.entity.Category;
-import com.restaurantmanagement.app.entity.MenuItems;
+import com.restaurantmanagement.app.entity.MenuItem;
 import com.restaurantmanagement.app.repository.CategoryRepository;
-
 import com.restaurantmanagement.app.repository.MenuRepository;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MenuService {
-    private MenuRepository managerMenuRepository;
-    private CategoryRepository categoryRepository;
+    private final MenuRepository menuRepository;
+    private final CategoryRepository categoryRepository;
 
     public MenuService() {
-        managerMenuRepository = new MenuRepository();
-        categoryRepository = new CategoryRepository();
+        this.menuRepository = new MenuRepository();
+        this.categoryRepository = new CategoryRepository();
     }
 
-    public ObservableList<MenuItems> getAllMenuItems() {
-        return FXCollections.observableArrayList(managerMenuRepository.getAllMenuItems());
+    public List<MenuItem> getAllMenuItems() {
+        return menuRepository.getAllMenuItems();
     }
 
-    public ObservableList<Category> getAllCategories() {
-        return FXCollections.observableArrayList(categoryRepository.getAllCategories());
+    public MenuItem getMenuItemByName(String name) {
+        List<MenuItem> menuItems = menuRepository.getAllMenuItems();
+        for (MenuItem item : menuItems) {
+            if (item.getName().equals(name)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    public List<Category> getAllCategories() {
+        return categoryRepository.getAllCategories();
     }
 
     public void addMenuItem(String name, double price, String description, int categoryId) {
-        managerMenuRepository.addMenuItem(name, price, description, categoryId);
+        menuRepository.addMenuItem(name, price, description, categoryId);
     }
 
     public void updateMenuItem(int id, String name, double price, String description, int categoryId) {
-        managerMenuRepository.updateMenuItem(id, name, price, description, categoryId);
+        menuRepository.updateMenuItem(id, name, price, description, categoryId);
     }
 
-    public ObservableList<MenuItems> searchMenuItems(String searchQuery) {
-        return FXCollections.observableArrayList(managerMenuRepository.searchMenuItems(searchQuery));
+    public List<MenuItem> searchMenuItems(String keyword) {
+        return menuRepository.searchMenuItems(keyword);
     }
 
-    public void deleteMenuItems(int id) {
-        managerMenuRepository.deleteMenuItem(id);
+    public void deleteMenuItem(int id) {
+        menuRepository.deleteMenuItem(id);
     }
 }

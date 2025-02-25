@@ -6,7 +6,7 @@ import com.restaurantmanagement.app.repository.CategoryRepository;
 import java.util.List;
 
 public class CategoryService {
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
     public CategoryService() {
         this.categoryRepository = new CategoryRepository();

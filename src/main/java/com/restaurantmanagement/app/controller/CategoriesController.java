@@ -2,8 +2,8 @@ package com.restaurantmanagement.app.controller;
 
 import com.restaurantmanagement.app.entity.Category;
 import com.restaurantmanagement.app.service.CategoryService;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -12,37 +12,26 @@ import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Comparator;
+import java.util.Optional;
 
 public class CategoriesController {
+    @FXML private TableView<Category> categoriesTable;
+    @FXML private TableColumn<Category, Integer> colCategoryID;
+    @FXML private TableColumn<Category, String> colCategoryName;
+    @FXML private Button backButton;
 
-    @FXML
-    private TableView<Category> categoriesTable;
-    @FXML
-    private TableColumn<Category, Integer> colCategoryID;
-    @FXML
-    private TableColumn<Category, String> colCategoryName;
-
-    @FXML
-    private Button backButton;
-
-    private CategoryService categoryService = new CategoryService();
+    private final CategoryService categoryService = new CategoryService();
 
     @FXML
     private void initialize() {
+        colCategoryID.setCellValueFactory(cellData -> new javafx.beans.property.SimpleIntegerProperty(cellData.getValue().getCategoryID()).asObject());
+        colCategoryName.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getName()));
         loadCategories();
     }
 
     private void loadCategories() {
         List<Category> categoryList = categoryService.getAllCategories();
-        categoryList.sort(Comparator.comparingInt(Category::getCategoryID));
-
-        colCategoryID.setCellValueFactory(cellData
-                -> cellData.getValue().categoryIDProperty().asObject());
-        colCategoryName.setCellValueFactory(cellData
-                -> cellData.getValue().nameProperty());
-
-        categoriesTable.setItems(javafx.collections.FXCollections.observableArrayList(categoryList));
+        categoriesTable.setItems(FXCollections.observableArrayList(categoryList));
     }
 
     @FXML
@@ -50,7 +39,6 @@ public class CategoriesController {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Add Category");
         dialog.setHeaderText("Enter the category name:");
-
         dialog.showAndWait().ifPresent(categoryName -> {
             Category newCategory = new Category(0, categoryName);
             categoryService.addCategory(newCategory);
@@ -65,7 +53,6 @@ public class CategoriesController {
             TextInputDialog dialog = new TextInputDialog(selectedCategory.getName());
             dialog.setTitle("Edit Category");
             dialog.setHeaderText("Edit the category name:");
-
             dialog.showAndWait().ifPresent(updatedName -> {
                 selectedCategory.setName(updatedName);
                 categoryService.updateCategory(selectedCategory);
@@ -84,7 +71,6 @@ public class CategoriesController {
             confirmation.setTitle("Delete Category");
             confirmation.setHeaderText("Are you sure you want to delete this category?");
             confirmation.setContentText("This action cannot be undone.");
-
             confirmation.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
                     categoryService.deleteCategory(selectedCategory.getCategoryID());

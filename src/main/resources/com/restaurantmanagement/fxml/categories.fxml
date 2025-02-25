@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
 <AnchorPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.restaurantmanagement.app.controller.CategoriesController">
     <VBox spacing="10" AnchorPane.topAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10">
-        <TableView fx:id="categoriesTable">
+        <TableView fx:id="categoriesTable" prefWidth="400" prefHeight="300">
             <columns>
-                <TableColumn text="Category ID" fx:id="colCategoryID"/>
-                <TableColumn text="Category Name" fx:id="colCategoryName"/>
+                <TableColumn fx:id="colCategoryID" text="Category ID" prefWidth="150"/>
+                <TableColumn fx:id="colCategoryName" text="Category Name" prefWidth="250"/>
             </columns>
         </TableView>
-
         <HBox spacing="10">
-            <Button text="Add Category" fx:id="addCategoryButton" onAction="#handleAddCategory"/>
-            <Button text="Edit Category" fx:id="editCategoryButton" onAction="#handleEditCategory"/>
-            <Button text="Delete Category" fx:id="deleteCategoryButton" onAction="#handleDeleteCategory"/>
-            <Button text="Back" fx:id="backButton" onAction="#handleBack"/>
+            <Button text="Add Category" onAction="#handleAddCategory"/>
+            <Button text="Edit Category" onAction="#handleEditCategory"/>
+            <Button text="Delete Category" onAction="#handleDeleteCategory"/>
+            <Button fx:id="backButton" text="Back" onAction="#handleBack"/>
         </HBox>
     </VBox>
 </AnchorPane>

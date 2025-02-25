@@ -15,9 +15,9 @@ import java.sql.Timestamp;
 import java.util.List;
 
 public class ViewOrdersController {
-
     @FXML private TableView<Order> ordersTableView;
     @FXML private TableColumn<Order, Integer> orderIdColumn;
+    @FXML private TableColumn<Order, String> itemsColumn;
     @FXML private TableColumn<Order, BigDecimal> totalAmountColumn;
     @FXML private TableColumn<Order, Timestamp> orderDateColumn;
     @FXML private TableColumn<Order, String> statusColumn;
@@ -30,12 +30,13 @@ public class ViewOrdersController {
     public void initialize() {
         Connection connection = DatabaseConnection.getConnection();
         orderViewService = new OrderViewService(connection);
-
-        orderIdColumn.setCellValueFactory(cellData -> cellData.getValue().orderIDProperty().asObject());
-        totalAmountColumn.setCellValueFactory(cellData -> cellData.getValue().totalAmountProperty());
-        orderDateColumn.setCellValueFactory(cellData -> cellData.getValue().orderDateProperty());
-        statusColumn.setCellValueFactory(cellData -> cellData.getValue().statusProperty());
-
+        orderIdColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleIntegerProperty(cellData.getValue().getOrderID()).asObject());
+        itemsColumn.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("itemsString"));
+        totalAmountColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().getTotalAmount()));
+        orderDateColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().getOrderDate()));
+        statusColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getStatus()));
+        ObservableList<String> statusOptions = FXCollections.observableArrayList("PENDING", "COMPLETED", "CANCELLED", "PAID");
+        statusComboBox.setItems(statusOptions);
         loadOrders();
     }
 
@@ -48,12 +49,10 @@ public class ViewOrdersController {
     public void handleUpdateStatus() {
         String selectedOrderId = orderIdField.getText();
         String selectedStatus = statusComboBox.getValue();
-
         if (selectedOrderId.isEmpty() || selectedStatus == null) {
             showAlert("Please provide both Order ID and Status.");
             return;
         }
-
         try {
             int orderId = Integer.parseInt(selectedOrderId);
             boolean updated = orderViewService.updateOrderStatus(orderId, selectedStatus);
@@ -73,16 +72,12 @@ public class ViewOrdersController {
     @FXML
     public void handleDelete() {
         String selectedOrderId = orderIdField.getText();
-
         if (selectedOrderId.isEmpty()) {
             showAlert("Please provide an Order ID to delete.");
             return;
         }
-
         try {
             int orderId = Integer.parseInt(selectedOrderId);
-
-            // Xác nhận trước khi xóa
             Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
             confirmation.setTitle("Confirm Deletion");
             confirmation.setHeaderText("Are you sure you want to delete this order?");

@@ -1,6 +1,9 @@
 package com.restaurantmanagement.app.controller;
 
+import com.restaurantmanagement.app.entity.Category;
 import com.restaurantmanagement.app.entity.OrderDetail;
+import com.restaurantmanagement.app.entity.MenuItem;
+import com.restaurantmanagement.app.service.MenuService;
 import com.restaurantmanagement.database.DatabaseConnection;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,49 +14,74 @@ import javafx.stage.Stage;
 
 import java.math.BigDecimal;
 import java.sql.*;
+import java.util.List;
 
 public class AddOrderController extends Stage {
-
-    @FXML
-    private TextField itemIdField, quantityField, priceField;
-    @FXML
-    private TableView<OrderDetail> orderTable;
-    @FXML
-    private TableColumn<OrderDetail, Integer> itemIdColumn, quantityColumn;
-    @FXML
-    private TableColumn<OrderDetail, BigDecimal> priceColumn;
-    @FXML
-    private Label totalAmountLabel;
+    @FXML private ComboBox<String> itemNameComboBox;
+    @FXML private TextField quantityField;
+    @FXML private TableView<OrderDetail> orderTable;
+    @FXML private TableColumn<OrderDetail, String> itemNameColumn;
+    @FXML private TableColumn<OrderDetail, String> categoryColumn;
+    @FXML private TableColumn<OrderDetail, Integer> quantityColumn;
+    @FXML private TableColumn<OrderDetail, BigDecimal> priceColumn;
+    @FXML private Label totalAmountLabel;
 
     private final ObservableList<OrderDetail> orderDetails = FXCollections.observableArrayList();
+    private final ObservableList<String> menuItemNames = FXCollections.observableArrayList();
+    private final MenuService menuService;
+
+    public AddOrderController() {
+        Connection connection = null;
+        connection = DatabaseConnection.getConnection();
+        this.menuService = new MenuService();
+    }
 
     @FXML
     public void initialize() {
-
-        itemIdColumn.setCellValueFactory(new PropertyValueFactory<>("itemID"));
+        loadMenuItems();
+        itemNameColumn.setCellValueFactory(new PropertyValueFactory<>("itemName"));
+        categoryColumn.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
         quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
-
+        itemNameComboBox.setItems(menuItemNames);
         orderTable.setItems(orderDetails);
         totalAmountLabel.setText("0.00");
     }
 
+    private void loadMenuItems() {
+        List<MenuItem> items = menuService.getAllMenuItems();
+        for (MenuItem item : items) {
+            menuItemNames.add(item.getName());
+        }
+    }
+
     @FXML
     public void handleAddItem() {
+        String selectedItemName = itemNameComboBox.getValue();
+        String quantityText = quantityField.getText();
+        if (selectedItemName == null || quantityText.isEmpty()) {
+            showAlert("Please select a meal and enter quantity!");
+            return;
+        }
         try {
-            int itemId = Integer.parseInt(itemIdField.getText());
-            int quantity = Integer.parseInt(quantityField.getText());
-            BigDecimal price = new BigDecimal(priceField.getText());
-
-            OrderDetail newItem = new OrderDetail(0, 0, itemId, quantity, price);
-            orderDetails.add(newItem);
-            updateTotalAmount();
-
-            itemIdField.clear();
+            int quantity = Integer.parseInt(quantityText);
+            if (quantity <= 0) {
+                showAlert("Quantity must be greater than 0!");
+                return;
+            }
+            MenuItem menuItem = menuService.getMenuItemByName(selectedItemName);
+            if (menuItem != null) {
+                int itemId = menuItem.getItemID();
+                BigDecimal price = menuItem.getPrice();
+                String categoryName = getCategoryName(menuItem.getCategoryID());
+                OrderDetail newItem = new OrderDetail(0, 0, itemId, selectedItemName, categoryName, quantity, price);
+                orderDetails.add(newItem);
+                updateTotalAmount();
+            }
             quantityField.clear();
-            priceField.clear();
+            itemNameComboBox.getSelectionModel().clearSelection();
         } catch (NumberFormatException e) {
-            showAlert("Invalid input! Please enter valid numbers.");
+            showAlert("Invalid quantity! Please enter a valid number.");
         }
     }
 
@@ -69,9 +97,7 @@ public class AddOrderController extends Stage {
     }
 
     private void updateTotalAmount() {
-        BigDecimal total = orderDetails.stream()
-                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal total = orderDetails.stream().map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()))).reduce(BigDecimal.ZERO, BigDecimal::add);
         totalAmountLabel.setText(total.toString());
     }
 
@@ -81,10 +107,8 @@ public class AddOrderController extends Stage {
             showAlert("Order cannot be empty.");
             return;
         }
-
         try (Connection connection = DatabaseConnection.getConnection()) {
             connection.setAutoCommit(false);
-
             for (OrderDetail detail : orderDetails) {
                 int itemId = detail.getItemID();
                 String checkItemSql = "SELECT COUNT(*) FROM MenuItems WHERE ItemID = ?";
@@ -99,16 +123,13 @@ public class AddOrderController extends Stage {
                     }
                 }
             }
-
             String sqlOrder = "INSERT INTO Orders (TotalAmount, Status) VALUES (?, 'PENDING')";
             try (PreparedStatement orderStatement = connection.prepareStatement(sqlOrder, PreparedStatement.RETURN_GENERATED_KEYS)) {
                 BigDecimal totalAmount = new BigDecimal(totalAmountLabel.getText());
                 orderStatement.setBigDecimal(1, totalAmount);
                 orderStatement.executeUpdate();
-
-                var generatedKeys = orderStatement.getGeneratedKeys();
+                ResultSet generatedKeys = orderStatement.getGeneratedKeys();
                 int orderId = generatedKeys.next() ? generatedKeys.getInt(1) : 0;
-
                 String sqlDetail = "INSERT INTO OrderDetails (OrderID, ItemID, Quantity, Price) VALUES (?, ?, ?, ?)";
                 try (PreparedStatement detailStatement = connection.prepareStatement(sqlDetail)) {
                     for (OrderDetail detail : orderDetails) {
@@ -120,7 +141,6 @@ public class AddOrderController extends Stage {
                     }
                 }
             }
-
             connection.commit();
             showAlert("Order added successfully!");
             close();
@@ -128,6 +148,16 @@ public class AddOrderController extends Stage {
             e.printStackTrace();
             showAlert("Error adding order: " + e.getMessage());
         }
+    }
+
+    private String getCategoryName(int categoryId) {
+        List<Category> categories = menuService.getAllCategories();
+        for (Category category : categories) {
+            if (category.getCategoryID() == categoryId) {
+                return category.getName();
+            }
+        }
+        return "Unknown";
     }
 
     private void showAlert(String message) {

@@ -2,21 +2,20 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.restaurantmanagement.app.controller.ViewOrdersController">
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.restaurantmanagement.app.controller.ViewOrdersController">
     <VBox spacing="10" AnchorPane.topAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10">
-        <TableView fx:id="ordersTableView">
+        <TableView fx:id="ordersTableView" prefWidth="600" prefHeight="400">
             <columns>
-                <TableColumn text="Order ID" fx:id="orderIdColumn"/>
-                <TableColumn text="Total Amount" fx:id="totalAmountColumn"/>
-                <TableColumn text="Order Date" fx:id="orderDateColumn"/>
-                <TableColumn text="Status" fx:id="statusColumn"/>
+                <TableColumn fx:id="orderIdColumn" text="Order ID" prefWidth="100"/>
+                <TableColumn fx:id="itemsColumn" text="Items" prefWidth="250"/>
+                <TableColumn fx:id="totalAmountColumn" text="Total Amount" prefWidth="100"/>
+                <TableColumn fx:id="orderDateColumn" text="Order Date" prefWidth="100"/>
+                <TableColumn fx:id="statusColumn" text="Status" prefWidth="100"/>
             </columns>
         </TableView>
-
         <HBox spacing="10">
-            <TextField fx:id="orderIdField" promptText="Enter Order ID"/>
-            <ComboBox fx:id="statusComboBox" promptText="Select Status"/>
+            <TextField fx:id="orderIdField" promptText="Enter Order ID" prefWidth="150"/>
+            <ComboBox fx:id="statusComboBox" promptText="Select Status" prefWidth="150"/>
             <Button text="Update Status" onAction="#handleUpdateStatus"/>
             <Button text="Delete" onAction="#handleDelete"/>
             <Button text="Refresh" onAction="#handleRefresh"/>
